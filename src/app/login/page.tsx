@@ -29,11 +29,8 @@ export default async function LoginPage({
   const safeNext = sanitizeNextPath(rawNext);
 
   return (
-    <>
-      <AuthPortal />
-      <div className="relative z-[1]">
-        <LoginForm nextPath={safeNext} />
-      </div>
-    </>
+    <AuthPortal>
+      <LoginForm nextPath={safeNext} />
+    </AuthPortal>
   );
 }
