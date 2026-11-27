@@ -28,6 +28,8 @@ export type BusinessRow = {
   amenities: Json;
   /** Ver CATEGORY_ORDER en src/lib/categories.ts; null = se deduce por el nombre */
   category?: string | null;
+  /** "gratis" | "pro". Ver src/lib/plans.ts */
+  plan?: string;
   cancellation_policy: string | null;
   is_active: boolean;
   created_at: string;
