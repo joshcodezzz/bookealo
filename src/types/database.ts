@@ -31,9 +31,34 @@ export type BusinessRow = {
   /** "gratis" | "pro". Ver src/lib/plans.ts */
   plan?: string;
   cancellation_policy: string | null;
+  /** Texto de presentación del negocio, revisado por el administrador */
+  description?: string | null;
   is_active: boolean;
   created_at: string;
   owner_id: string | null;
+};
+
+export type ApplicationStatus = "pending" | "approved" | "rejected";
+export type ApplicationPhoto = { path: string; url: string };
+
+/** Solicitud de un negocio para aparecer en Bookealo; la revisa el administrador a mano. */
+export type BusinessApplicationRow = {
+  id: string;
+  applicant_id: string;
+  status: ApplicationStatus;
+  business_name: string;
+  category: string;
+  zone: string | null;
+  phone: string | null;
+  maps_url: string | null;
+  instagram: string | null;
+  description: string;
+  services_text: string;
+  photos: Json;
+  review_note: string | null;
+  business_id: string | null;
+  created_at: string;
+  reviewed_at: string | null;
 };
 
 export type ServiceRow = {
@@ -164,6 +189,7 @@ export type Database = {
           amenities?: Json;
           category?: string | null;
           plan?: string;
+          description?: string | null;
           cancellation_policy?: string | null;
           is_active?: boolean;
           created_at?: string;
@@ -178,6 +204,7 @@ export type Database = {
           amenities?: Json;
           category?: string | null;
           plan?: string;
+          description?: string | null;
           cancellation_policy?: string | null;
           is_active?: boolean;
           owner_id?: string | null;
@@ -270,6 +297,27 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      business_applications: {
+        Row: BusinessApplicationRow;
+        Insert: {
+          applicant_id: string;
+          business_name: string;
+          category: string;
+          zone?: string | null;
+          phone?: string | null;
+          maps_url?: string | null;
+          instagram?: string | null;
+          description: string;
+          services_text: string;
+          photos?: Json;
+        };
+        Update: {
+          status?: ApplicationStatus;
+          review_note?: string | null;
+          reviewed_at?: string | null;
+        };
+        Relationships: [];
       };
       conversations: {
         Row: ConversationRow;
@@ -402,6 +450,12 @@ export type Database = {
         Args: {
           p_business: string;
           p_email: string;
+        };
+        Returns: string;
+      };
+      admin_approve_application: {
+        Args: {
+          p_application: string;
         };
         Returns: string;
       };
