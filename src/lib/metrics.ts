@@ -31,7 +31,7 @@ export type ProMetrics = BasicMetrics & {
   uniqueCustomers: number;
   returningCustomers: number;
   averageTicket: number | null;
-  perDay: { ymd: string; label: string; count: number }[];
+  perDay: { ymd: string; label: string; count: number; cancelled: number }[];
   perHour: { hour: number; label: string; count: number }[];
   perWeekday: { label: string; count: number }[];
   perService: { name: string; count: number; revenue: number }[];
@@ -104,6 +104,7 @@ export function computeProMetrics(bookings: MetricBooking[], now: Date = new Dat
   let pending30 = 0;
 
   const dayCounts = new Map<string, number>();
+  const cancelledDayCounts = new Map<string, number>();
   const hourCounts = new Map<number, number>();
   const weekdayCounts = new Array<number>(7).fill(0);
   const services = new Map<string, { name: string; count: number; revenue: number }>();
@@ -126,6 +127,8 @@ export function computeProMetrics(bookings: MetricBooking[], now: Date = new Dat
 
     if (b.status === "cancelled") {
       cancelled30 += 1;
+      const ymd = panamaParts(t).ymd;
+      cancelledDayCounts.set(ymd, (cancelledDayCounts.get(ymd) ?? 0) + 1);
       continue;
     }
     if (b.status === "pending") {
@@ -150,7 +153,12 @@ export function computeProMetrics(bookings: MetricBooking[], now: Date = new Dat
 
   const perDay = Array.from({ length: 30 }, (_, i) => {
     const p = panamaParts(windowStart + i * DAY_MS);
-    return { ymd: p.ymd, label: `${p.day}/${p.month}`, count: dayCounts.get(p.ymd) ?? 0 };
+    return {
+      ymd: p.ymd,
+      label: `${p.day}/${p.month}`,
+      count: dayCounts.get(p.ymd) ?? 0,
+      cancelled: cancelledDayCounts.get(p.ymd) ?? 0,
+    };
   });
 
   const perHour = [...hourCounts.entries()]
