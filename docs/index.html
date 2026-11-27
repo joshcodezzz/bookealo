@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Reserva canchas, barberías, spas y más servicios por horario en Panamá, sin llamar.">
+<title>Bookealo · Reserva lo que necesitas en Panamá</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:64px;color-scheme:dark}
+body{margin:0;background:#000;color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,"Segoe UI",Roboto,sans-serif;line-height:1.47;-webkit-font-smoothing:antialiased}
+a,button,select{touch-action:manipulation}
+a{color:#2997ff;text-decoration:none}a:hover{text-decoration:underline}
+:focus{outline:none}:focus-visible{outline:2px solid rgba(245,245,247,.55);outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1024px;margin:0 auto;padding:0 22px}
+@media(max-width:899px){.wrap{padding:0 24px}}
+/* Nav */
+.nav{position:sticky;top:0;z-index:10;background:rgba(22,22,23,.8);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);border-bottom:1px solid rgba(255,255,255,.1)}
+.nav__bar{height:44px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{font-size:17px;font-weight:600;letter-spacing:-.03em;color:#f5f5f7}.brand:hover{text-decoration:none}
+.nav__links{display:flex;gap:40px;font-size:12px;letter-spacing:-.01em}
+.nav__links a{color:rgba(245,245,247,.8)}.nav__links a:hover{color:#f5f5f7;text-decoration:none}
+.nav__cta{display:inline-flex;align-items:center;height:28px;padding:0 14px;border-radius:999px;background:#0071e3;color:#fff;font-size:12px;font-weight:500}
+.nav__cta:hover{background:#0077ed;text-decoration:none}
+@media(max-width:599px){.nav__links{display:none}}
+/* Hero */
+.hero{padding:80px 0 56px;text-align:center}
+.hero h1{margin:0 auto;max-width:820px;font-size:64px;line-height:1.0625;font-weight:600;letter-spacing:-.009em}
+.hero .lead{margin:12px auto 0;max-width:620px;font-size:24px;line-height:1.33;color:#86868b}
+@media(max-width:899px){.hero{padding:48px 0 40px}.hero h1{font-size:36px;line-height:1.1}.hero .lead{font-size:17px;line-height:1.47}}
+.search{margin:40px auto 0;max-width:680px;display:flex;flex-direction:column;gap:12px}
+.search__row{display:flex;gap:12px}
+@media(max-width:599px){.search__row{flex-direction:column}}
+.field{position:relative}.field--grow{flex:1}.field--zone{width:220px}
+@media(max-width:599px){.field--zone{width:100%}}
+.field svg{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none}
+.input{height:52px;width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#1d1d1f;color:#f5f5f7;font:inherit;font-size:17px;outline:none;transition:border-color .3s,box-shadow .3s}
+.input:focus{border-color:#0071e3;box-shadow:0 0 0 4px rgba(0,113,227,.25)}
+input.input{padding:0 16px 0 44px}input.input::placeholder{color:#86868b}
+select.input{padding:0 40px 0 16px;appearance:none;-webkit-appearance:none;cursor:pointer}
+.today-wrap{display:flex;justify-content:center;padding-top:4px}
+.chip-today{height:44px;padding:0 20px;border-radius:999px;font:inherit;font-size:15px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(52,196,112,.4);color:#34c470;transition:background-color .2s,border-color .2s,transform .2s cubic-bezier(.23,1,.32,1)}
+.chip-today .dot{width:8px;height:8px;border-radius:50%;background:#34c470}
+.chip-today:active{transform:scale(.97)}
+@media(hover:hover) and (pointer:fine){.chip-today:hover{border-color:#34c470}}
+.chip-today[aria-pressed="true"]{background:#34c470;border-color:#34c470;color:#0a2e18}
+.chip-today[aria-pressed="true"] .dot{background:#0a2e18}
+/* Categorías */
+.cats{padding-bottom:80px}
+@media(max-width:899px){.cats{padding-bottom:56px}}
+.cats h2{margin:0 0 24px;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-.01em}
+@media(max-width:899px){.cats h2{font-size:28px;line-height:1.14;margin-bottom:20px}}
+.cat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media(max-width:899px){.cat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+.cat-card{display:flex;flex-direction:column;justify-content:space-between;min-height:150px;padding:24px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:#111113;color:#f5f5f7;font:inherit;text-align:left;cursor:pointer;transition:transform .3s cubic-bezier(.23,1,.32,1),border-color .3s,background-color .3s}
+@media(max-width:899px){.cat-card{min-height:116px;padding:16px}}
+.cat-card:active{transform:scale(.98)}
+@media(hover:hover) and (pointer:fine){.cat-card:hover{border-color:rgba(255,255,255,.2);background:#161618}}
+.cat-card[aria-pressed="true"]{border-color:#0071e3;background:#16263d}
+.cat-card__top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.cat-card svg{width:28px;height:28px;color:rgba(245,245,247,.85)}
+.cat-card[aria-pressed="true"] svg{color:#2997ff}
+.badge{border-radius:999px;border:1px solid rgba(255,255,255,.15);padding:2px 10px;font-size:11px;font-weight:600;color:#86868b}
+.badge--new{border-color:rgba(41,151,255,.4);color:#2997ff}
+.cat-card__name{margin:24px 0 0;font-size:17px;line-height:1.25;font-weight:600;letter-spacing:-.016em}
+.cat-card__sub{margin:4px 0 0;font-size:14px;line-height:1.35;color:#86868b;font-variant-numeric:tabular-nums}
+@media(max-width:899px){.cat-card__name{margin-top:16px;font-size:15px}.cat-card__sub{font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+/* Resultados */
+.results{padding-bottom:96px}
+.results__head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-top:1px solid rgba(255,255,255,.12);padding-top:24px;margin-bottom:32px}
+.results__head h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em}
+.results__meta{display:flex;align-items:baseline;gap:16px}
+.count{margin:0;font-size:15px;color:#86868b;font-variant-numeric:tabular-nums}
+.linkbtn{border:0;background:none;padding:0;font:inherit;font-size:15px;color:#2997ff;cursor:pointer}
+.linkbtn:hover{text-decoration:underline}
+.group{margin-bottom:64px}
+.group__head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
+.group__head h3{margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+@media(max-width:899px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
+@media(max-width:639px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{display:flex;flex-direction:column;border-radius:18px;background:#1d1d1f;padding:16px;color:inherit;transition:transform .3s cubic-bezier(.23,1,.32,1)}
+@media(max-width:899px){.card{padding:12px}}
+.card:hover{text-decoration:none}
+@media(hover:hover) and (pointer:fine){.card:hover{transform:scale(1.015)}.card:hover .go{text-decoration:underline}}
+.card:active{transform:scale(.98)}
+.art{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;overflow:hidden}
+.art svg{width:55%;height:auto}
+.art img{width:100%;height:100%;object-fit:cover;display:block}
+.cat{margin:16px 0 0;font-size:12px;font-weight:600;color:#86868b}
+.name{margin:2px 0 0;font-size:17px;line-height:1.25;font-weight:600;letter-spacing:-.016em;color:#f5f5f7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{margin:4px 0 0;font-size:14px;color:#86868b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.price{margin:2px 0 0;font-size:14px;color:#f5f5f7;font-variant-numeric:tabular-nums}
+.today{margin:6px 0 0;font-size:14px;font-weight:500;color:#34c470;display:flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.today::before{content:"";width:6px;height:6px;border-radius:50%;background:#34c470;flex-shrink:0}
+.go{margin-top:auto;padding-top:8px;font-size:15px;color:#2997ff}
+.go::after{content:"\00a0›"}
+@media(max-width:899px){.cat{margin-top:12px}.name{font-size:15px}.meta,.price,.today{font-size:13px}.go{font-size:14px}}
+.empty{padding:56px 0;text-align:center}
+.empty p{margin:0}.empty .t{font-size:21px;font-weight:600}.empty .d{margin:8px auto 0;max-width:460px;font-size:17px;color:#86868b}
+.empty .btn{margin-top:20px;height:36px;padding:0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:#1a1a1c;color:#f5f5f7;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.empty .btn:hover{background:#222225}
+/* Footer */
+footer{background:#1d1d1f;color:#86868b;font-size:12px;line-height:1.33;padding-bottom:20px}
+footer a{color:#86868b}footer a:hover{color:#f5f5f7}
+.ft__note{margin:0;padding:16px 0 14px;border-bottom:1px solid rgba(255,255,255,.16)}
+.ft__cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:24px 0}
+.ft__cols div{display:flex;flex-direction:column;gap:8px}
+.ft__cols h3{margin:0 0 2px;font-size:12px;font-weight:600;color:rgba(245,245,247,.9)}
+.ft__bottom{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-top:16px;border-top:1px solid rgba(255,255,255,.16)}
+.ft__bottom p{margin:0}
+.demo-note{margin:0 auto 24px;max-width:680px;font-size:13px;color:#86868b;text-align:center}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s cubic-bezier(.23,1,.32,1) backwards}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+@media(prefers-reduced-transparency:reduce){.nav{background:#161617;-webkit-backdrop-filter:none;backdrop-filter:none}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav__bar">
+    <a class="brand" href="#" translate="no">Bookealo</a>
+    <nav class="nav__links" aria-label="Navegación principal">
+      <a href="#" style="color:#f5f5f7">Inicio</a>
+      <a href="#categorias">Categorías</a>
+      <a href="https://bookealo-panama.vercel.app/login">Iniciar sesión</a>
+    </nav>
+    <a class="nav__cta" href="https://bookealo-panama.vercel.app/registro">Crear cuenta</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero rise">
+    <div class="wrap">
+      <h1>Reserva lo que necesitas en Panamá</h1>
+      <p class="lead">Elige el horario que te queda y reserva sin llamar.</p>
+      <div class="search">
+        <div class="search__row">
+          <div class="field field--grow">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="#86868b" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="left:16px"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
+            <input id="q" class="input" type="search" placeholder="¿Qué quieres reservar?" aria-label="Buscar negocios" autocomplete="off" enterkeyhint="search">
+          </div>
+          <div class="field field--zone">
+            <label for="zona" class="sr-only">Zona</label>
+            <select id="zona" class="input"><option value="">Todas las zonas</option></select>
+            <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="#86868b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="right:16px"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>
+          </div>
+        </div>
+        <div class="today-wrap">
+          <button type="button" class="chip-today" id="today" aria-pressed="false" hidden><span class="dot" aria-hidden="true"></span>Disponible hoy</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cats" id="categorias" aria-labelledby="cats-title">
+    <div class="wrap">
+      <h2 id="cats-title">Categorías</h2>
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+  </section>
+
+  <section class="results" id="negocios" aria-label="Negocios disponibles">
+    <div class="wrap">
+      <p class="demo-note" id="note">Cargando negocios…</p>
+      <div class="results__head">
+        <h2 id="title">Todos los negocios</h2>
+        <div class="results__meta">
+          <p class="count" id="count" aria-live="polite"></p>
+          <button type="button" class="linkbtn" id="clear" hidden>Limpiar</button>
+        </div>
+      </div>
+      <div id="list"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="ft__note">Los precios mostrados son referenciales y pueden variar según el horario y el servicio elegido. Confirma los detalles con cada negocio al reservar.</p>
+    <div class="ft__cols">
+      <div><h3>Explorar</h3><a href="#">Inicio</a><a href="#categorias">Categorías</a><a href="#negocios">Todos los negocios</a></div>
+      <div><h3>Tu cuenta</h3><a href="https://bookealo-panama.vercel.app/login">Iniciar sesión</a><a href="https://bookealo-panama.vercel.app/registro">Crear cuenta</a></div>
+    </div>
+    <div class="ft__bottom">
+      <p>Copyright © 2026 <span translate="no">Bookealo</span>. Todos los derechos reservados.</p>
+      <p style="color:rgba(245,245,247,.8)">Panamá</p>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+// ─── Conexión a Supabase ────────────────────────────────────────────────────
+// Pega aquí NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (la clave pública,
+// nunca la service_role). Sin estos valores la página muestra datos de ejemplo.
+const SUPABASE_URL = "https://inwbynxofshvcctchjha.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_iaXRods1KHPfEmYfTym7SA_ZrFrOupy";
+// Las tarjetas abren la página real de cada negocio en tu app:
+const APP_URL = "https://bookealo-panama.vercel.app";
+// ────────────────────────────────────────────────────────────────────────────
+
+const ORDER = ['talents', 'mandaos', 'belleza', 'bienestar', 'hogar', 'limpieza', 'deportes', 'clases', 'mascotas'];
+const CATS = {
+  talents:   { label: 'Bookealo Talents', unit: ['talento', 'talentos'], blurb: 'Freelancers: pianistas, detailing, limpieza de casas y más', isNew: true },
+  mandaos:   { label: "Manda'os", unit: ['servicio', 'servicios'], blurb: 'Alguien que te busca y te trae lo que necesitas', isNew: true },
+  belleza:   { label: 'Belleza y Estilo', unit: ['negocio', 'negocios'], blurb: 'Barberías, salones y uñas' },
+  bienestar: { label: 'Bienestar y Spa', unit: ['espacio', 'espacios'], blurb: 'Spas, masajes, yoga y pilates' },
+  hogar:     { label: 'Hogar y Reparaciones', unit: ['técnico', 'técnicos'], blurb: 'Plomería, electricidad, aire acondicionado' },
+  limpieza:  { label: 'Limpieza', unit: ['proveedor', 'proveedores'], blurb: 'Casas, oficinas, alfombras y más' },
+  deportes:  { label: 'Deportes y Espacios', unit: ['espacio', 'espacios'], blurb: 'Canchas, pádel, clubes y alquiler de espacios' },
+  clases:    { label: 'Clases y Tutorías', unit: ['profesor', 'profesores'], blurb: 'Idiomas, música, refuerzo escolar' },
+  mascotas:  { label: 'Mascotas', unit: ['servicio', 'servicios'], blurb: 'Grooming, paseos, veterinaria' }
+};
+// Íconos 24×24 de la cuadrícula
+const CAT_ICONS = {
+  talents: '<circle cx="10" cy="8" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0"/><path d="M18.5 3.5v3M17 5h3M20.5 9.5l-1 .5"/>',
+  mandaos: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="m9.5 14 2 2 3.5-3.5"/>',
+  belleza: '<circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="18" r="2.5"/><path d="M8.5 16 16 4M15.5 16 8 4"/>',
+  bienestar: '<path d="M12 3c3.5 4.5 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 2.5-6.5 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  hogar: '<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/>',
+  limpieza: '<path d="M9 9h5l1 3v8H8v-8z"/><path d="M10 9V6h4l3-2"/><path d="M19 8.5h2M18.5 11l1.5 1M18.5 6l1.5-1"/>',
+  deportes: '<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.5"/><path d="M3 9.5h2.5v5H3M21 9.5h-2.5v5H21"/>',
+  clases: '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M7 8.5h10M7 12h6"/><path d="M12 16v4M8.5 20h7"/>',
+  mascotas: '<circle cx="7" cy="10" r="1.6"/><circle cx="10.5" cy="6.5" r="1.6"/><circle cx="14.5" cy="6.5" r="1.6"/><circle cx="18" cy="10" r="1.6"/><path d="M12 12c-2.8 0-5 3-5 5.2 0 1.6 1.3 2.3 2.6 2 1-.2 1.6-.6 2.4-.6s1.4.4 2.4.6c1.3.3 2.6-.4 2.6-2C17 15 14.8 12 12 12z"/>'
+};
+// Ilustraciones 120×80 para tarjetas sin foto
+const ART = {
+  futbol: '<rect x="4" y="4" width="112" height="72" rx="2"/><line x1="60" y1="4" x2="60" y2="76"/><circle cx="60" cy="40" r="9"/><rect x="4" y="22" width="16" height="36"/><rect x="100" y="22" width="16" height="36"/>',
+  padel: '<ellipse cx="50" cy="32" rx="20" ry="24"/><circle cx="44" cy="24" r="1.6"/><circle cx="52" cy="22" r="1.6"/><circle cx="58" cy="30" r="1.6"/><circle cx="46" cy="34" r="1.6"/><circle cx="54" cy="40" r="1.6"/><path d="M50 56 L50 74"/><rect x="46" y="62" width="8" height="14" rx="3"/><circle cx="86" cy="58" r="8"/><path d="M79 54 C84 58 88 58 93 54"/>',
+  yate: '<path d="M58 8 L58 54"/><path d="M58 12 L84 50 L58 50 Z"/><path d="M54 18 L34 50 L54 50 Z"/><path d="M24 56 L96 56 L86 68 L34 68 Z"/><path d="M14 74 C22 70 30 78 38 74 C46 70 54 78 62 74 C70 70 78 78 86 74 C94 70 100 76 106 74"/>',
+  deportes: '<circle cx="60" cy="40" r="30"/><path d="M30 40 L90 40"/><path d="M60 10 C46 22 46 58 60 70"/><path d="M60 10 C74 22 74 58 60 70"/>',
+  barberia: '<circle cx="42" cy="58" r="9"/><circle cx="78" cy="58" r="9"/><path d="M48 51 L82 8"/><path d="M72 51 L38 8"/><circle cx="60" cy="36" r="1.6"/>',
+  belleza: '<ellipse cx="54" cy="30" rx="18" ry="22"/><ellipse cx="54" cy="30" rx="12" ry="16"/><path d="M54 52 L54 76"/><path d="M80 12 L80 22 M75 17 L85 17"/><path d="M88 32 L88 38 M85 35 L91 35"/>',
+  bienestar: '<path d="M60 72 C40 60 32 40 40 18 C52 24 60 38 60 52"/><path d="M60 72 C80 60 88 40 80 18 C68 24 60 38 60 52"/><path d="M60 72 C54 54 54 32 60 10 C66 32 66 54 60 72 Z"/><path d="M28 76 L92 76"/>',
+  talents: '<rect x="18" y="34" width="72" height="40" rx="3"/><path d="M30 34 V74 M42 34 V74 M54 34 V74 M66 34 V74 M78 34 V74"/><path d="M26 34 V56 H34 V34 M50 34 V56 H58 V34 M74 34 V56 H82 V34"/><path d="M98 30 V8 L110 12"/><ellipse cx="94" cy="30" rx="4" ry="3"/>',
+  mandaos: '<path d="M40 30 H80 L76 74 H44 Z"/><path d="M50 30 V24 A10 10 0 0 1 70 24 V30"/><path d="M50 52 L57 59 L70 46"/><path d="M8 66 C16 56 24 70 32 60" stroke-dasharray="3 4"/><path d="M88 60 C96 50 104 64 112 54" stroke-dasharray="3 4"/>',
+  hogar: '<path d="M24 40 L60 10 L96 40"/><path d="M32 34 V74 H88 V34"/><path d="M52 74 V54 H68 V74"/><path d="M98 50 L110 62 M104 46 L114 56 L108 62 L98 52 Z"/>',
+  limpieza: '<path d="M44 34 H64 L68 46 V76 H40 V46 Z"/><path d="M48 34 V24 H64 L76 16"/><path d="M84 26 H94 M82 36 L90 42 M82 16 L90 10"/><circle cx="98" cy="58" r="3"/><circle cx="86" cy="66" r="2"/>',
+  clases: '<rect x="16" y="8" width="88" height="52" rx="3"/><path d="M30 24 H74 M30 36 H60"/><path d="M60 60 V74 M44 76 H76"/>',
+  mascotas: '<circle cx="36" cy="38" r="7"/><circle cx="50" cy="22" r="7"/><circle cx="70" cy="22" r="7"/><circle cx="84" cy="38" r="7"/><path d="M60 46 C46 46 36 60 36 68 C36 75 42 78 48 77 C53 76 56 74 60 74 C64 74 67 76 72 77 C78 78 84 75 84 68 C84 60 74 46 60 46 Z"/>'
+};
+const PAL = {
+  futbol: [['#2f9e55', '#0f3d22'], ['#227a46', '#0a2e18']], padel: [['#1f7fb8', '#0b2d45'], ['#1b8f8a', '#073230']],
+  yate: [['#0a6e8a', '#022e3c'], ['#1d5f9e', '#071f38']], deportes: [['#2d6a4f', '#0d2b1f'], ['#3a6f8f', '#10283a']],
+  barberia: [['#a5683a', '#2e1a0c'], ['#7a5a3c', '#231810']], belleza: [['#b5677a', '#3a1520'], ['#a77b6a', '#2f1d17']],
+  bienestar: [['#6f9a7e', '#1b2e23'], ['#9a8466', '#2b2216']], talents: [['#c08a2e', '#33220a'], ['#b0663a', '#2e170b']],
+  mandaos: [['#4f9e3a', '#14300f'], ['#2f8f6a', '#0b2b20']], hogar: [['#4a6a8a', '#141f2b'], ['#6a6f7a', '#1a1c21']],
+  limpieza: [['#2a9db0', '#0a2e35'], ['#3a8fc0', '#0d2a3a']], clases: [['#3d5fb0', '#101c38'], ['#2f7a9e', '#0c2430']],
+  mascotas: [['#c0703a', '#33190a'], ['#b08a3a', '#2e220b']]
+};
+// Mismas reglas que src/lib/categories.ts (lo más específico primero)
+const RULES = [
+  ['mandaos', /\b(mandad|manda'?os|recado|encargo|mensajer|delivery)/i],
+  ['talents', /\b(freelanc|pianist|piano|m[uú]sic|dj|fot[oó]graf|detailing|chef|bartender|animador|talent)/i],
+  ['clases', /\b(clases?|tutor|profesor|academ|escuela|curso|idioma|ingl[eé]s)/i],
+  ['mascotas', /\b(mascota|pets?|perr|gat[oa]s?|veterinar|grooming|canin)/i],
+  ['limpieza', /\b(limpieza|cleaning|lavander|aseo)/i],
+  ['hogar', /\b(plomer|electric|carpinter|reparaci|handyman|pintor|cerrajer|hogar|aire acondicionado)/i],
+  ['belleza', /\b(barber|hair|sal[oó]n|nails|u[ñn]as|beauty|belleza|est[eé]tica|peluquer|maquillaje|makeup)/i],
+  ['bienestar', /\b(spa|masaje|massage|yoga|pilates|wellness|bienestar|meditaci|fisio)/i],
+  ['deportes', /\b(soccer|f[uú]tbol|futsal|cancha|p[aá]del|tenis|tennis|sport|deport|gym|gimnasio|fitness|crossfit|club|yacht|yachty|yate|boat|bote|charter)/i]
+];
+function resolveCategory(stored, text) {
+  if (ORDER.includes(stored)) return stored;
+  for (const [c, re] of RULES) if (re.test(text)) return c;
+  return 'deportes';
+}
+function resolveArt(cat, t) {
+  if (cat === 'deportes') {
+    if (/\b(yacht|yachty|yate|boat|bote|charter|velero)/i.test(t)) return 'yate';
+    if (/\b(p[aá]del|tenis|tennis|squash|pickleball)/i.test(t)) return 'padel';
+    if (/\b(soccer|f[uú]tbol|futsal|cancha)/i.test(t)) return 'futbol';
+  }
+  if (cat === 'belleza' && /\bbarber/i.test(t)) return 'barberia';
+  return cat;
+}
+const hash = (s) => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); };
+const grad = (art, seed) => { const g = PAL[art][hash(seed) % 2]; return `linear-gradient(160deg,${g[0]},${g[1]})`; };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const usd = new Intl.NumberFormat('es-PA', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const timeFmt = new Intl.DateTimeFormat('es-PA', { timeZone: 'America/Panama', hour: 'numeric', minute: '2-digit', hour12: true });
+
+// Panamá es UTC-5 todo el año (sin horario de verano)
+function panamaToday() { const d = new Date(Date.now() - 5 * 3600e3); return { ymd: d.toISOString().slice(0, 10), dow: d.getUTCDay() }; }
+const toMin = (t) => { const [h, m] = t.split(':'); return +h * 60 + +m; };
+const hhmm = (m) => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+// Misma lógica que computeAvailableSlots de la app
+function freeSlots(ymd, duration, schedule, busy) {
+  if (!schedule || schedule.is_closed || duration <= 0) return [];
+  const open = toMin(schedule.open_time), close = toMin(schedule.close_time), now = Date.now(), out = [];
+  const busyMs = (busy || []).map((b) => [Date.parse(b.slot_start), Date.parse(b.slot_end)]);
+  for (let c = open; c + duration <= close; c += duration) {
+    const s = Date.parse(`${ymd}T${hhmm(c)}:00-05:00`), e = Date.parse(`${ymd}T${hhmm(c + duration)}:00-05:00`);
+    if (s <= now || busyMs.some(([bs, be]) => s < be && e > bs)) continue;
+    out.push(s);
+  }
+  return out;
+}
+
+async function loadFromSupabase() {
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: false } });
+  let biz = await sb.from('businesses').select('id, name, zone, cover_image_url, amenities, category').eq('is_active', true).order('created_at', { ascending: true });
+  if (biz.error && biz.error.code === '42703') // la columna category aún no existe
+    biz = await sb.from('businesses').select('id, name, zone, cover_image_url, amenities').eq('is_active', true).order('created_at', { ascending: true });
+  if (biz.error) throw biz.error;
+  const ids = biz.data.map((b) => b.id);
+  const svc = ids.length ? await sb.from('services').select('id, business_id, price, slot_duration_minutes').in('business_id', ids).eq('is_active', true) : { data: [] };
+  if (svc.error) throw svc.error;
+  const services = svc.data || [];
+  const today = panamaToday();
+  const firstSlot = {};
+  if (services.length) {
+    const sch = await sb.from('schedules').select('service_id, open_time, close_time, is_closed').in('service_id', services.map((s) => s.id)).eq('day_of_week', today.dow);
+    const schedBy = Object.fromEntries((sch.data || []).map((r) => [r.service_id, r]));
+    const from = `${today.ymd}T00:00:00-05:00`, to = new Date(Date.parse(from) + 864e5).toISOString();
+    await Promise.all(services.filter((s) => schedBy[s.id] && !schedBy[s.id].is_closed).map(async (s) => {
+      const busy = await sb.rpc('get_busy_slots', { p_service_id: s.id, p_from: from, p_to: to });
+      if (busy.error) return; // si no se puede verificar, no se marca disponible
+      const slots = freeSlots(today.ymd, s.slot_duration_minutes, schedBy[s.id], busy.data);
+      if (slots.length && (!firstSlot[s.business_id] || slots[0] < firstSlot[s.business_id])) firstSlot[s.business_id] = slots[0];
+    }));
+  }
+  const counts = {};
+  const cnt = await sb.rpc('get_business_booking_counts', { p_since: new Date(Date.now() - 30 * 864e5).toISOString() });
+  if (!cnt.error) (cnt.data || []).forEach((r) => { counts[r.business_id] = Number(r.booking_count); });
+
+  return biz.data.map((b) => {
+    const own = services.filter((s) => s.business_id === b.id);
+    const min = own.length ? Math.min(...own.map((s) => Number(s.price))) : null;
+    const amen = Array.isArray(b.amenities) ? b.amenities.filter((a) => typeof a === 'string') : [];
+    const text = [b.name, ...amen].join(' ');
+    const cat = resolveCategory(b.category, text), art = resolveArt(cat, text);
+    return {
+      name: b.name, zone: b.zone || 'Panamá', price: min === null ? null : usd.format(min), cat, art,
+      today: firstSlot[b.id] ? timeFmt.format(new Date(firstSlot[b.id])) : '',
+      bookings: counts[b.id] || 0,
+      img: b.cover_image_url && /^https?:\/\//.test(b.cover_image_url) ? b.cover_image_url : null,
+      href: `${APP_URL}/negocios/${b.id}`, bg: grad(art, b.id)
+    };
+  });
+}
+
+// Datos de ejemplo: negocios reales de bookealo-panama.vercel.app; horas de hoy inventadas
+const DEMO = [
+  ['Soccer City Costa del Este', 'Costa del Este', 'USD 20', '7:00 p. m.'],
+  ['Frank Barber Shop', 'Vía Israel, San Francisco', 'USD 20', '4:30 p. m.'],
+  ['Boss Cave Barber Studio', 'Bella Vista', 'USD 15', ''],
+  ['Hair Hunters & Spa', 'Costa del Este', 'USD 20', '5:00 p. m.'],
+  ['Feeling Yachty Panamá', 'Calzada de Amador', 'USD 1,500', ''],
+  ['Padel X Force Club', 'Vía Ricardo J. Alfaro', 'USD 30', '8:00 p. m.'],
+  ['Sky Padel Costa Sur', 'Costa Sur', 'USD 30', ''],
+  ['Fairplay Padel Panamá', 'Ciudad de Panamá', 'USD 28', '6:30 p. m.'],
+  ['Saavedra Barber', 'Carrasquilla', 'USD 10', ''],
+  ['Panama Sport Club Vía Israel', 'Vía Israel, San Francisco', 'USD 28', '9:00 p. m.']
+].map(([name, zone, price, today]) => {
+  const cat = resolveCategory(null, name), art = resolveArt(cat, name);
+  return { name, zone, price, cat, art, today, bookings: 0, img: null, href: '#', bg: grad(art, name) };
+});
+
+let DATA = DEMO, live = false;
+if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
+  try { DATA = await loadFromSupabase(); live = true; } catch (err) { console.error('[Bookealo] Supabase:', err); }
+}
+const $ = (id) => document.getElementById(id);
+$('note').textContent = live
+  ? 'Datos en vivo desde Supabase. «Hoy desde…» sale de los horarios y reservas reales.'
+  : (SUPABASE_URL ? 'No se pudo conectar con Supabase; se muestran datos de ejemplo.' : 'Vista previa con datos de ejemplo: las horas «Hoy desde…» son inventadas.');
+
+let state = { q: '', zone: '', cat: null, today: false };
+const countBy = Object.fromEntries(ORDER.map((c) => [c, DATA.filter((b) => b.cat === c).length]));
+
+// Zonas
+[...new Set(DATA.map((b) => b.zone))].sort((a, b) => a.localeCompare(b, 'es')).forEach((z) => {
+  const o = document.createElement('option'); o.value = z; o.textContent = z; $('zona').appendChild(o);
+});
+if (DATA.some((b) => b.today)) $('today').hidden = false;
+
+// Cuadrícula de categorías
+$('catGrid').innerHTML = ORDER.map((c) => {
+  const info = CATS[c], n = countBy[c];
+  const badge = n === 0 ? '<span class="badge">Pronto</span>' : info.isNew ? '<span class="badge badge--new">Nuevo</span>' : '';
+  const sub = n > 0 ? `${n} ${n === 1 ? info.unit[0] : info.unit[1]}` : info.blurb;
+  return `<button type="button" class="cat-card" data-cat="${c}" aria-pressed="false">
+    <span class="cat-card__top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CAT_ICONS[c]}</svg>${badge}</span>
+    <span><p class="cat-card__name">${info.label}</p><p class="cat-card__sub">${sub}</p></span></button>`;
+}).join('');
+
+function card(b) {
+  const art = b.img
+    ? `<div class="art" style="background:${b.bg}"><img src="${esc(b.img)}" alt="" loading="lazy" width="400" height="400"></div>`
+    : `<div class="art" style="background:${b.bg}"><svg viewBox="0 0 120 80" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ART[b.art]}</svg></div>`;
+  return `<a class="card" href="${esc(b.href)}">${art}
+    <p class="cat">${CATS[b.cat].label}</p>
+    <h3 class="name">${esc(b.name)}</h3>
+    <p class="meta">${esc(b.zone)}</p>
+    ${b.price ? `<p class="price">Desde ${b.price}</p>` : ''}
+    ${b.today ? `<p class="today">Hoy desde ${esc(b.today)}</p>` : ''}
+    ${b.bookings >= 10 ? `<p class="meta">${b.bookings} reservas en los últimos 30 días</p>` : ''}
+    <span class="go">Ver horarios</span></a>`;
+}
+
+function render() {
+  const q = state.q.trim().toLowerCase();
+  const shown = DATA.filter((b) =>
+    (!state.zone || b.zone === state.zone) &&
+    (!state.cat || b.cat === state.cat) &&
+    (!state.today || b.today) &&
+    (!q || `${b.name} ${b.zone} ${CATS[b.cat].label}`.toLowerCase().includes(q))
+  ).sort((a, b) => Number(!!b.today) - Number(!!a.today));
+  const filtered = !!(q || state.zone || state.cat || state.today);
+
+  $('title').textContent = state.cat ? CATS[state.cat].label : filtered ? 'Resultados' : 'Todos los negocios';
+  $('count').textContent = `${shown.length} ${shown.length === 1 ? 'resultado' : 'resultados'}`;
+  $('clear').hidden = !filtered;
+  $('today').setAttribute('aria-pressed', String(state.today));
+  document.querySelectorAll('.cat-card').forEach((el) => el.setAttribute('aria-pressed', String(el.dataset.cat === state.cat)));
+
+  let html;
+  if (!shown.length) {
+    if (state.cat && countBy[state.cat] === 0) {
+      const info = CATS[state.cat];
+      html = `<div class="empty"><p class="t">${info.label} llega pronto</p><p class="d">${info.blurb}. Todavía no hay nadie publicado en esta categoría.</p><button type="button" class="btn" data-clear>Ver todos los negocios</button></div>`;
+    } else {
+      html = `<div class="empty"><p class="t">${state.today ? 'No quedan horarios libres hoy con estos filtros' : 'No hay resultados con estos filtros'}</p><p class="d">${state.today ? 'Quita «Disponible hoy» para ver horarios de los próximos días.' : 'Prueba con otro término, otra categoría u otra zona.'}</p><button type="button" class="btn" data-clear>Limpiar filtros</button></div>`;
+    }
+  } else if (!filtered) {
+    html = ORDER.map((k) => {
+      const items = shown.filter((b) => b.cat === k);
+      if (!items.length) return '';
+      return `<section class="group" aria-labelledby="g-${k}"><div class="group__head"><h3 id="g-${k}">${CATS[k].label}</h3>
+        ${items.length > 1 ? `<button type="button" class="linkbtn" data-pick="${k}">Ver ${items.length} ›</button>` : ''}</div>
+        <div class="grid">${items.map(card).join('')}</div></section>`;
+    }).join('');
+  } else {
+    html = `<div class="grid">${shown.map(card).join('')}</div>`;
+  }
+  $('list').innerHTML = html;
+}
+
+function pick(c) {
+  state.cat = state.cat === c ? null : c;
+  render();
+  if (state.cat) $('negocios').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+function clearAll() { state = { q: '', zone: '', cat: null, today: false }; $('q').value = ''; $('zona').value = ''; render(); }
+
+$('q').addEventListener('input', (e) => { state.q = e.target.value; render(); });
+$('zona').addEventListener('change', (e) => { state.zone = e.target.value; render(); });
+$('today').addEventListener('click', () => { state.today = !state.today; render(); });
+$('clear').addEventListener('click', clearAll);
+$('catGrid').addEventListener('click', (e) => { const t = e.target.closest('[data-cat]'); if (t) pick(t.dataset.cat); });
+$('list').addEventListener('click', (e) => {
+  const p = e.target.closest('[data-pick]'); if (p) pick(p.dataset.pick);
+  if (e.target.closest('[data-clear]')) clearAll();
+  const c = e.target.closest('a.card'); if (c && c.getAttribute('href') === '#') e.preventDefault();
+});
+
+render();
+</script>
+</body>
+</html>
