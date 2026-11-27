@@ -38,6 +38,13 @@ export default async function AdminPage() {
     (ownersRes.data ?? []).map((o) => [o.business_id, o.owner_email]),
   );
 
+  // Solicitudes de negocios pendientes de revisión (si la tabla aún no existe, cuenta 0).
+  const { count: pendingCount } = await supabase
+    .from("business_applications")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+  const pendingApplications = pendingCount ?? 0;
+
   const mediaByBusiness = new Map<string, BusinessMediaRow[]>();
   (mediaRes.data ?? []).forEach((m) => {
     const list = mediaByBusiness.get(m.business_id) ?? [];
@@ -76,6 +83,18 @@ export default async function AdminPage() {
         </p>
       )}
 
+      {pendingApplications > 0 && (
+        <Link
+          href="/admin/solicitudes"
+          className="block rounded-[16px] border border-[#ff9f0a]/30 bg-[rgba(255,159,10,0.1)] px-5 py-3.5 text-[15px] text-[#ffb340] hover:bg-[rgba(255,159,10,0.16)]"
+        >
+          {pendingApplications === 1
+            ? "Hay 1 solicitud de negocio por revisar."
+            : `Hay ${pendingApplications} solicitudes de negocio por revisar.`}{" "}
+          <span className="underline underline-offset-2">Revisar</span>
+        </Link>
+      )}
+
       <AdminListings businesses={adminBusinesses} />
 
       <Card className="max-w-2xl rounded-[24px] p-6 sm:p-8">
@@ -101,6 +120,12 @@ export default async function AdminPage() {
         </div>
 
         <div className="mt-7 flex flex-wrap items-center gap-3">
+          <Link
+            href="/admin/solicitudes"
+            className="bk-tx inline-flex h-11 items-center justify-center rounded-full border border-white/10 bg-[#1a1a1c] px-6 text-[14px] font-medium text-[#f5f5f7] hover:bg-[#222225]"
+          >
+            Solicitudes{pendingApplications > 0 ? ` (${pendingApplications})` : ""}
+          </Link>
           <Link
             href="/admin/recordatorios"
             className="bk-tx inline-flex h-11 items-center justify-center rounded-full border border-white/10 bg-[#1a1a1c] px-6 text-[14px] font-medium text-[#f5f5f7] hover:bg-[#222225]"
