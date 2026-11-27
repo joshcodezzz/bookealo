@@ -20,17 +20,23 @@ export default async function AdminPage() {
   const { user, profile } = await requireRole(["super_admin"], "/admin");
 
   const supabase = await createClient();
-  const [businessesRes, mediaRes] = await Promise.all([
+  const [businessesRes, mediaRes, ownersRes] = await Promise.all([
     supabase
       .from("businesses")
-      .select("id, name, zone, category, plan, is_active, cover_image_url, amenities")
+      .select("id, name, zone, phone, maps_url, category, plan, is_active, cover_image_url, amenities, owner_id")
       .order("created_at", { ascending: false }),
     supabase
       .from("business_media")
       .select("id, business_id, kind, storage_path, url, title, position, created_at")
       .order("position", { ascending: true })
       .order("created_at", { ascending: true }),
+    // Si la función aún no existe en la base, simplemente no se muestran los correos.
+    supabase.rpc("admin_business_owners"),
   ]);
+
+  const ownerEmailByBusiness = new Map<string, string>(
+    (ownersRes.data ?? []).map((o) => [o.business_id, o.owner_email]),
+  );
 
   const mediaByBusiness = new Map<string, BusinessMediaRow[]>();
   (mediaRes.data ?? []).forEach((m) => {
@@ -46,6 +52,11 @@ export default async function AdminPage() {
     category: resolveCategory(b.category, b.name, ...parseAmenities(b.amenities)),
     plan: b.plan ?? "gratis",
     isActive: b.is_active,
+    phone: b.phone,
+    mapsUrl: b.maps_url,
+    amenities: parseAmenities(b.amenities),
+    hasOwner: Boolean(b.owner_id),
+    ownerEmail: ownerEmailByBusiness.get(b.id) ?? null,
     coverImageUrl: b.cover_image_url,
     media: mediaByBusiness.get(b.id) ?? [],
   }));
@@ -56,7 +67,7 @@ export default async function AdminPage() {
       <PageHeader
         eyebrow="Super Admin"
         title="Administración de Bookealo"
-        subtitle="Agrega negocios y administra sus fotos, videos y modelos 3D."
+        subtitle="Agrega, edita u oculta negocios y administra sus fotos, videos y modelos 3D."
       />
 
       {loadError && (
@@ -80,8 +91,8 @@ export default async function AdminPage() {
               <Badge tone="confirmed">super_admin</Badge>
             </div>
             <p className="text-[14px] leading-relaxed text-[#86868b]">
-              Asignar dueños, cambiar roles y editar o desactivar negocios
-              existentes se sigue haciendo desde el panel de Supabase.
+              Cambiar el rol de un usuario (por ejemplo, nombrar otro
+              administrador) se sigue haciendo desde el panel de Supabase.
             </p>
             <p className="text-[12px] text-[rgba(245,245,247,0.44)]">
               Sesión activa: {profile.full_name || user.email} ({user.email})
