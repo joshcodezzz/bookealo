@@ -9,6 +9,7 @@ import {
   BookingsIcon,
   CalendarIcon,
   ChartIcon,
+  ChatIcon,
   ClockIcon,
   GridIcon,
   HomeIcon,
@@ -113,6 +114,12 @@ export function AppShell({
           icon: <ClockIcon className="h-[22px] w-[22px]" />,
         },
         {
+          href: "/mensajes",
+          label: "Mensajes",
+          shortLabel: "Mensajes",
+          icon: <ChatIcon className="h-[22px] w-[22px]" />,
+        },
+        {
           href: "/panel/metricas",
           label: "Métricas",
           shortLabel: "Métricas",
@@ -161,6 +168,12 @@ export function AppShell({
           shortLabel: "Reservas",
           icon: <BookingsIcon className="h-[22px] w-[22px]" />,
           badgeCount: navBadgeCount,
+        },
+        {
+          href: "/mensajes",
+          label: "Mensajes",
+          shortLabel: "Mensajes",
+          icon: <ChatIcon className="h-[22px] w-[22px]" />,
         },
         {
           href: "/perfil",
