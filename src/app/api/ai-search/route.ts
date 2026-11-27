@@ -80,16 +80,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Escribe algo para buscar." }, { status: 400 });
   }
 
-  const local = (): SearchInterpretation => ({
+  // `reason` explica (sin datos sensibles) por qué no respondió la IA; sirve para diagnosticar.
+  const local = (reason: string): SearchInterpretation & { reason: string } => ({
     filters: interpretLocally(query, zones) ?? EMPTY_FILTERS,
     source: "local",
+    reason,
   });
 
   const apiKey = process.env.AI_API_KEY ?? process.env.DEEPSEEK_API_KEY;
-  if (!apiKey) return NextResponse.json(local());
+  if (!apiKey) return NextResponse.json(local("no_key"));
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (rateLimited(ip)) return NextResponse.json(local());
+  if (rateLimited(ip)) return NextResponse.json(local("rate_limited"));
 
   const baseUrl = (process.env.AI_BASE_URL ?? "https://api.deepseek.com").replace(/\/+$/, "");
   const model = process.env.AI_MODEL ?? "deepseek-flash";
@@ -120,7 +122,7 @@ export async function POST(request: Request) {
     // Algunos modelos no aceptan el modo JSON: se reintenta sin él (el prompt ya pide solo JSON).
     if (response.status === 400) response = await ask(false);
 
-    if (!response.ok) return NextResponse.json(local());
+    if (!response.ok) return NextResponse.json(local(`http_${response.status}`));
 
     const data = (await response.json()) as { choices?: { message?: { content?: string } }[] };
     const content = data.choices?.[0]?.message?.content ?? "";
@@ -128,11 +130,11 @@ export async function POST(request: Request) {
     const filters = sanitizeFilters(JSON.parse(jsonText), zones);
 
     // Si el modelo no entendió nada, se intenta con las reglas locales.
-    if (!hasAnyFilter(filters)) return NextResponse.json(local());
+    if (!hasAnyFilter(filters)) return NextResponse.json(local("empty"));
 
     return NextResponse.json({ filters, source: "ai" } satisfies SearchInterpretation);
-  } catch {
-    return NextResponse.json(local());
+  } catch (error) {
+    return NextResponse.json(local(error instanceof Error && error.name === "AbortError" ? "timeout" : "error"));
   } finally {
     clearTimeout(timer);
   }
