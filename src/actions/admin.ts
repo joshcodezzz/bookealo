@@ -39,7 +39,9 @@ async function requireSuperAdmin() {
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-function validateListing(input: NewListingInput): string | null {
+export type ListingDetailsInput = Omit<NewListingInput, "service">;
+
+function validateListing(input: ListingDetailsInput & { service?: NewListingInput["service"] }): string | null {
   const name = input.name.trim();
   if (name.length < 2 || name.length > 80) return "El nombre debe tener entre 2 y 80 caracteres.";
   if (!isBusinessCategory(input.category)) return "Elige una categoría.";
@@ -214,6 +216,84 @@ export async function setCoverImageAction(businessId: string, url: string): Prom
   if (error) return { ok: false, error: translateError(error.message) };
 
   revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath(`/negocios/${businessId}`);
+  return { ok: true };
+}
+
+/** Edita los datos de un negocio existente. No toca servicios, horarios ni reservas. */
+export async function updateListingAction(
+  businessId: string,
+  input: ListingDetailsInput,
+): Promise<AdminActionResult> {
+  if (!(await requireSuperAdmin())) return { ok: false, error: "Solo el administrador puede editar negocios." };
+
+  const validation = validateListing(input);
+  if (validation) return { ok: false, error: validation };
+
+  const supabase = await createClient();
+  const amenities = input.amenities.map((a) => a.trim().slice(0, 40)).filter(Boolean).slice(0, 12);
+
+  const { data, error } = await supabase
+    .from("businesses")
+    .update({
+      name: input.name.trim(),
+      category: input.category,
+      zone: input.zone.trim() || null,
+      phone: input.phone.trim() || null,
+      maps_url: input.mapsUrl.trim() || null,
+      amenities,
+      plan: input.plan,
+    })
+    .eq("id", businessId)
+    .select("id");
+
+  if (error) return { ok: false, error: translateError(error.message) };
+  if (!data || data.length === 0) return { ok: false, error: "No encontramos ese negocio." };
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath(`/negocios/${businessId}`);
+  return { ok: true };
+}
+
+/** Oculta o vuelve a publicar un negocio. Al ocultarlo no se borra nada: reservas y archivos se conservan. */
+export async function setListingActiveAction(businessId: string, isActive: boolean): Promise<AdminActionResult> {
+  if (!(await requireSuperAdmin())) return { ok: false, error: "Solo el administrador puede cambiar esto." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("businesses")
+    .update({ is_active: isActive })
+    .eq("id", businessId)
+    .select("id");
+
+  if (error) return { ok: false, error: translateError(error.message) };
+  if (!data || data.length === 0) return { ok: false, error: "No encontramos ese negocio." };
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath(`/negocios/${businessId}`);
+  return { ok: true };
+}
+
+/** Asigna como dueño a la cuenta con ese correo; con el correo vacío, deja el negocio sin dueño. */
+export async function assignOwnerAction(businessId: string, email: string): Promise<AdminActionResult> {
+  if (!(await requireSuperAdmin())) return { ok: false, error: "Solo el administrador puede asignar dueños." };
+
+  const clean = email.trim().toLowerCase();
+  if (clean && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return { ok: false, error: "Ese correo no parece válido." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_assign_owner", { p_business: businessId, p_email: clean });
+  if (error) {
+    // PGRST202: la función todavía no existe en la base de datos.
+    if (error.code === "PGRST202" || /could not find the function/i.test(error.message)) {
+      return { ok: false, error: "Falta aplicar un cambio en la base de datos para asignar dueños desde aquí." };
+    }
+    return { ok: false, error: error.message || "No se pudo asignar el dueño." };
+  }
+
   revalidatePath("/admin");
   revalidatePath(`/negocios/${businessId}`);
   return { ok: true };
