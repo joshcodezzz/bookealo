@@ -15,13 +15,13 @@ import {
  *   AI_API_KEY   clave del proveedor (sin ella se usan reglas por palabras clave)
  *   AI_BASE_URL  por defecto https://api.deepseek.com
  *   AI_MODEL     por defecto deepseek-flash
- * Ejemplo gratis con Groq: AI_BASE_URL=https://api.groq.com/openai/v1 y AI_MODEL=llama-3.3-70b-versatile
+ * Ejemplo gratis con Groq: AI_BASE_URL=https://api.groq.com/openai/v1 y AI_MODEL=openai/gpt-oss-120b
  *
  * El modelo nunca ve datos de clientes: solo la frase, las categorías y los nombres de zona.
  */
 
 const MAX_QUERY = 200;
-const TIMEOUT_MS = 6000;
+const TIMEOUT_MS = 8000;
 
 // Límite simple por IP (por instancia del servidor) para que nadie gaste la cuota.
 const WINDOW_MS = 60_000;
@@ -98,21 +98,27 @@ export async function POST(request: Request) {
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const response = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model,
-        temperature: 0,
-        max_tokens: 200,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: buildPrompt(zones) },
-          { role: "user", content: query },
-        ],
-      }),
-      signal: controller.signal,
-    });
+    const ask = (jsonMode: boolean) =>
+      fetch(`${baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model,
+          temperature: 0,
+          // Margen para modelos que razonan antes de responder.
+          max_tokens: 800,
+          ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
+          messages: [
+            { role: "system", content: buildPrompt(zones) },
+            { role: "user", content: query },
+          ],
+        }),
+        signal: controller.signal,
+      });
+
+    let response = await ask(true);
+    // Algunos modelos no aceptan el modo JSON: se reintenta sin él (el prompt ya pide solo JSON).
+    if (response.status === 400) response = await ask(false);
 
     if (!response.ok) return NextResponse.json(local());
 
