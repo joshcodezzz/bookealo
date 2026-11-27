@@ -34,6 +34,7 @@ type AppShellProps = {
   userEmail: string | null;
   profile: ProfileRow | null;
   navBadgeCount?: number;
+  unreadMessages?: number;
   nextBooking?: NextBookingPreview | null;
   children: ReactNode;
 };
@@ -74,6 +75,7 @@ export function AppShell({
   userEmail,
   profile,
   navBadgeCount = 0,
+  unreadMessages = 0,
   nextBooking = null,
   children,
 }: AppShellProps) {
@@ -118,6 +120,7 @@ export function AppShell({
           label: "Mensajes",
           shortLabel: "Mensajes",
           icon: <ChatIcon className="h-[22px] w-[22px]" />,
+          badgeCount: unreadMessages,
         },
         {
           href: "/panel/metricas",
@@ -174,6 +177,7 @@ export function AppShell({
           label: "Mensajes",
           shortLabel: "Mensajes",
           icon: <ChatIcon className="h-[22px] w-[22px]" />,
+          badgeCount: unreadMessages,
         },
         {
           href: "/perfil",
@@ -274,6 +278,13 @@ export function AppShell({
           },
         ]
       : []),
+    {
+      title: "Legal",
+      links: [
+        { href: "/terminos", label: "Términos de uso" },
+        { href: "/privacidad", label: "Privacidad" },
+      ],
+    },
   ];
 
   const showMiniBar =
@@ -392,7 +403,7 @@ export function AppShell({
             negocio al reservar.
           </p>
 
-          <div className="grid grid-cols-2 gap-6 py-6 min-[900px]:grid-cols-3">
+          <div className="grid grid-cols-2 gap-6 py-6 min-[900px]:grid-cols-4">
             {footerColumns.map((column) => (
               <div key={column.title}>
                 <h3 className="mb-2.5 font-semibold text-[#f5f5f7]/90">
