@@ -398,6 +398,17 @@ export type Database = {
         };
         Returns: undefined;
       };
+      admin_assign_owner: {
+        Args: {
+          p_business: string;
+          p_email: string;
+        };
+        Returns: string;
+      };
+      admin_business_owners: {
+        Args: Record<string, never>;
+        Returns: { business_id: string; owner_email: string }[];
+      };
     };
     Enums: {
       user_role: UserRole;
