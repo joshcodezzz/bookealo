@@ -26,6 +26,8 @@ type BusinessServicesSectionProps = {
   initialServiceId?: string | null;
   initialDateStr?: string | null;
   initialSlotTime?: string | null;
+  /** Solo en canchas y espacios tiene sentido decir si es techado o al aire libre. */
+  showRoof?: boolean;
 };
 
 export function BusinessServicesSection({
@@ -36,6 +38,7 @@ export function BusinessServicesSection({
   initialServiceId,
   initialDateStr,
   initialSlotTime,
+  showRoof = true,
 }: BusinessServicesSectionProps) {
   const canReserve = userRole === null || userRole === "customer";
   const isNonCustomerRole =
@@ -58,6 +61,15 @@ export function BusinessServicesSection({
 
   const handleOpenService = (service: BookableService) => {
     setSheetInitialDate(null);
+    setSheetInitialTime(null);
+    setActiveService(service);
+  };
+
+  // Al tocar un día del horario se abre la reserva en la próxima fecha de ese día.
+  const bookableDays = [...new Set(days.map((d) => d.dayOfWeek))];
+  const handlePickDay = (service: BookableService, dayOfWeek: number) => {
+    const next = days.find((d) => d.dayOfWeek === dayOfWeek);
+    setSheetInitialDate(next?.dateStr ?? null);
     setSheetInitialTime(null);
     setActiveService(service);
   };
@@ -98,7 +110,7 @@ export function BusinessServicesSection({
                     {service.name}
                   </h3>
                   <p className="mt-1.5 text-[15px] text-[#86868b]">
-                    {service.is_roofed ? "Techado" : "Aire libre"} ·{" "}
+                    {showRoof && <>{service.is_roofed ? "Techado" : "Aire libre"} · </>}
                     {service.slot_duration_minutes} min por turno
                   </p>
                 </div>
@@ -124,7 +136,11 @@ export function BusinessServicesSection({
                 </div>
               </div>
 
-              <BusinessSchedulePreview schedules={service.schedules} />
+              <BusinessSchedulePreview
+                schedules={service.schedules}
+                onPickDay={canReserve ? (day) => handlePickDay(service, day) : undefined}
+                bookableDays={bookableDays}
+              />
             </article>
           ))}
         </div>
