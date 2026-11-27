@@ -269,6 +269,15 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
     }
   };
 
+  // El brillo de la tarjeta sigue al cursor: se guarda su posición dentro de la tarjeta.
+  const trackGlow = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType !== "mouse") return;
+    const el = event.currentTarget;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--gx", `${event.clientX - rect.left}px`);
+    el.style.setProperty("--gy", `${event.clientY - rect.top}px`);
+  };
+
   const selectedInfo = selectedCategory ? CATEGORIES[selectedCategory] : null;
   // Solo se muestran las categorías que ya tienen negocios; si ninguna tiene, se muestran todas.
   const visibleCategories = useMemo(() => {
@@ -416,7 +425,8 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
                   type="button"
                   aria-pressed={active}
                   onClick={() => pickCategory(category)}
-                  className={`group relative flex min-h-[116px] cursor-pointer flex-col justify-between rounded-[18px] border p-4 text-left transition-[transform,border-color,background-color] duration-300 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98] min-[900px]:min-h-[150px] min-[900px]:p-6 ${
+                  onPointerMove={trackGlow}
+                  className={`bk-glow group relative flex min-h-[116px] cursor-pointer flex-col justify-between rounded-[18px] border p-4 text-left transition-[transform,border-color,background-color] duration-300 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98] min-[900px]:min-h-[150px] min-[900px]:p-6 ${
                     active
                       ? "border-[#0071e3] bg-[#16263d]"
                       : "border-white/[0.08] bg-[#111113] hover:border-white/20 hover:bg-[#161618]"
