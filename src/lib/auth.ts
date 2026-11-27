@@ -44,7 +44,7 @@ export function getPostAuthRedirect(role: UserRole, next: string | null | undefi
   }
 
   if (role === "business_owner") {
-    if (safeNext && (safeNext.startsWith("/panel") || safeNext.startsWith("/negocios"))) {
+    if (safeNext && (safeNext.startsWith("/panel") || safeNext.startsWith("/negocios") || safeNext.startsWith("/mensajes"))) {
       return safeNext;
     }
     return "/panel";
