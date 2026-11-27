@@ -5,6 +5,8 @@ import {
   BusinessServicesSection,
   type ServiceWithSchedules,
 } from "@/components/businesses/BusinessServicesSection";
+import { startConversationAction } from "@/actions/chat";
+import { BusinessGallery } from "@/components/businesses/BusinessGallery";
 import { Artwork } from "@/components/ui/Artwork";
 import { ChevronLeftIcon, ExternalLinkIcon } from "@/components/ui/Icons";
 import { getAuthContext } from "@/lib/auth";
@@ -69,7 +71,7 @@ export default async function BusinessDetailPage({
   const { data: business } = await supabase
     .from("businesses")
     .select(
-      "id, name, zone, maps_url, phone, cover_image_url, amenities, cancellation_policy, is_active",
+      "id, name, zone, maps_url, phone, cover_image_url, amenities, cancellation_policy, is_active, owner_id",
     )
     .eq("id", id)
     .eq("is_active", true)
@@ -125,6 +127,19 @@ export default async function BusinessDetailPage({
   const firstParam = (val: string | string[] | undefined) =>
     Array.isArray(val) ? (val[0] ?? null) : (val ?? null);
 
+  // El chat solo se ofrece si el negocio tiene un dueño que pueda responder, y a clientes o visitantes.
+  const viewerRole = auth.profile?.role ?? null;
+  const canChat = Boolean(business.owner_id) && (viewerRole === null || viewerRole === "customer");
+
+  // Galería (fotos, videos, modelos 3D). Si la tabla aún no existe, simplemente no se muestra.
+  const { data: mediaRows } = await supabase
+    .from("business_media")
+    .select("id, business_id, kind, storage_path, url, title, position, created_at")
+    .eq("business_id", business.id)
+    .order("position", { ascending: true })
+    .order("created_at", { ascending: true });
+  const galleryMedia = mediaRows ?? [];
+
   return (
     <div>
       {/* Breadcrumb */}
@@ -157,7 +172,7 @@ export default async function BusinessDetailPage({
           </p>
         )}
 
-        {(business.phone || safeMapsUrl) && (
+        {(business.phone || safeMapsUrl || canChat) && (
           <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-3 text-[15px] min-[900px]:mt-8">
             {business.phone && (
               <a
@@ -166,6 +181,13 @@ export default async function BusinessDetailPage({
               >
                 {business.phone}
               </a>
+            )}
+            {canChat && (
+              <form action={startConversationAction.bind(null, business.id)}>
+                <button type="submit" className="bk-ul bk-tx cursor-pointer">
+                  Escribir al negocio
+                </button>
+              </form>
             )}
             {safeMapsUrl && (
               <a
@@ -195,6 +217,12 @@ export default async function BusinessDetailPage({
           className="rounded-none"
         />
       </div>
+
+      {galleryMedia.length > 0 && (
+        <div className="bk-rise mt-16 min-[900px]:mt-24" style={{ animationDelay: "200ms" }}>
+          <BusinessGallery media={galleryMedia} businessName={business.name} />
+        </div>
+      )}
 
       {/* Servicios activos + flujo de reserva interactivo */}
       <div
