@@ -8,7 +8,8 @@ import {
 import { startConversationAction } from "@/actions/chat";
 import { BusinessGallery } from "@/components/businesses/BusinessGallery";
 import { Artwork } from "@/components/ui/Artwork";
-import { ChevronLeftIcon, ExternalLinkIcon } from "@/components/ui/Icons";
+import { Button } from "@/components/ui/Button";
+import { ChatIcon, ChevronLeftIcon, ExternalLinkIcon } from "@/components/ui/Icons";
 import { getAuthContext } from "@/lib/auth";
 import { getNextPanamaDays } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
@@ -172,7 +173,7 @@ export default async function BusinessDetailPage({
           </p>
         )}
 
-        {(business.phone || safeMapsUrl || canChat) && (
+        {(business.phone || safeMapsUrl) && (
           <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-3 text-[15px] min-[900px]:mt-8">
             {business.phone && (
               <a
@@ -181,13 +182,6 @@ export default async function BusinessDetailPage({
               >
                 {business.phone}
               </a>
-            )}
-            {canChat && (
-              <form action={startConversationAction.bind(null, business.id)}>
-                <button type="submit" className="bk-ul bk-tx cursor-pointer">
-                  Escribir al negocio
-                </button>
-              </form>
             )}
             {safeMapsUrl && (
               <a
@@ -206,7 +200,7 @@ export default async function BusinessDetailPage({
 
       {/* Portada independiente */}
       <div
-        className="group bk-rise mt-12 h-[240px] overflow-hidden rounded-[24px] sm:h-[340px] min-[900px]:mt-20 min-[900px]:h-[460px]"
+        className="group bk-rise relative mt-12 h-[240px] overflow-hidden rounded-[24px] sm:h-[340px] min-[900px]:mt-20 min-[900px]:h-[460px]"
         style={{ animationDelay: "160ms" }}
       >
         <Artwork
@@ -216,6 +210,17 @@ export default async function BusinessDetailPage({
           size="cover"
           className="rounded-none"
         />
+        {canChat && (
+          <form
+            action={startConversationAction.bind(null, business.id)}
+            className="absolute bottom-4 left-4 min-[900px]:bottom-6 min-[900px]:left-6"
+          >
+            <Button type="submit" variant="glass" size="lg">
+              <ChatIcon className="h-[18px] w-[18px]" />
+              Escribir al negocio
+            </Button>
+          </form>
+        )}
       </div>
 
       {galleryMedia.length > 0 && (
