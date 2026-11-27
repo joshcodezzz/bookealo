@@ -73,7 +73,7 @@ export default async function BusinessDetailPage({
   const { data: business } = await supabase
     .from("businesses")
     .select(
-      "id, name, zone, maps_url, phone, cover_image_url, amenities, cancellation_policy, is_active, owner_id, category",
+      "id, name, zone, maps_url, phone, cover_image_url, amenities, cancellation_policy, is_active, owner_id, category, description",
     )
     .eq("id", id)
     .eq("is_active", true)
@@ -167,6 +167,12 @@ export default async function BusinessDetailPage({
         <h1 className="mt-2.5 text-[40px] font-semibold leading-[1.05] tracking-[-0.035em] text-[#f5f5f7] min-[900px]:text-[72px]">
           {business.name}
         </h1>
+
+        {business.description && (
+          <p className="mt-5 whitespace-pre-line text-[17px] leading-[1.5] text-[#f5f5f7]/85 min-[900px]:text-[19px]">
+            {business.description}
+          </p>
+        )}
 
         {amenities.length > 0 && (
           <p className="mt-5 text-[16px] text-[#86868b] min-[900px]:text-[18px]">
