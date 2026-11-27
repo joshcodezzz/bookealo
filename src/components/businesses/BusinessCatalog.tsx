@@ -270,6 +270,12 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
   };
 
   const selectedInfo = selectedCategory ? CATEGORIES[selectedCategory] : null;
+  // Solo se muestran las categorías que ya tienen negocios; si ninguna tiene, se muestran todas.
+  const visibleCategories = useMemo(() => {
+    const withBusinesses = CATEGORY_ORDER.filter((c) => countByCategory[c] > 0);
+    return withBusinesses.length > 0 ? withBusinesses : CATEGORY_ORDER;
+  }, [countByCategory]);
+
   const selectedIsEmpty = selectedCategory ? countByCategory[selectedCategory] === 0 : false;
 
   return (
@@ -399,7 +405,7 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
             Categorías
           </h2>
           <div className="grid grid-cols-2 gap-3 min-[900px]:grid-cols-3 min-[900px]:gap-4">
-            {CATEGORY_ORDER.map((category) => {
+            {visibleCategories.map((category) => {
               const info = CATEGORIES[category];
               const count = countByCategory[category];
               const active = selectedCategory === category;
