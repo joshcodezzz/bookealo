@@ -23,6 +23,9 @@ export async function getOwnerBusinessAndServices(
       "id, name, zone, maps_url, phone, cover_image_url, amenities, cancellation_policy, is_active, created_at, owner_id",
     )
     .eq("owner_id", ownerId)
+    // Si una cuenta tiene más de un negocio, el panel usa el más antiguo en vez de fallar.
+    .order("created_at", { ascending: true })
+    .limit(1)
     .maybeSingle();
 
   if (businessError) {
