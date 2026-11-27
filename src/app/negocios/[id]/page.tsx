@@ -13,6 +13,7 @@ import { ChatIcon, ChevronLeftIcon, ExternalLinkIcon } from "@/components/ui/Ico
 import { getAuthContext } from "@/lib/auth";
 import { getNextPanamaDays } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
+import { resolveCategory } from "@/lib/categories";
 import { parseAmenities, type ScheduleRow } from "@/types/database";
 
 function isSafeHttpUrl(url: string | null | undefined): url is string {
@@ -72,7 +73,7 @@ export default async function BusinessDetailPage({
   const { data: business } = await supabase
     .from("businesses")
     .select(
-      "id, name, zone, maps_url, phone, cover_image_url, amenities, cancellation_policy, is_active, owner_id",
+      "id, name, zone, maps_url, phone, cover_image_url, amenities, cancellation_policy, is_active, owner_id, category",
     )
     .eq("id", id)
     .eq("is_active", true)
@@ -247,6 +248,9 @@ export default async function BusinessDetailPage({
           initialServiceId={firstParam(resolvedSearchParams.reservar)}
           initialDateStr={firstParam(resolvedSearchParams.fecha)}
           initialSlotTime={firstParam(resolvedSearchParams.hora)}
+          showRoof={
+            resolveCategory(business.category, business.name, ...amenities) === "deportes"
+          }
         />
       </div>
 
