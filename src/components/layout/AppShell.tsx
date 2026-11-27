@@ -270,14 +270,15 @@ export function AppShell({
             { href: "/registro", label: "Crear cuenta" },
           ],
     },
-    ...(role === "business_owner"
-      ? [
-          {
-            title: "Para negocios",
-            links: [{ href: "/panel", label: "Panel de negocio" }],
-          },
-        ]
-      : []),
+    {
+      title: "Para negocios",
+      links:
+        role === "business_owner"
+          ? [{ href: "/panel", label: "Panel de negocio" }]
+          : role === "super_admin"
+            ? [{ href: "/admin/solicitudes", label: "Solicitudes" }]
+            : [{ href: "/publicar", label: "Publica tu negocio" }],
+    },
     {
       title: "Legal",
       links: [
