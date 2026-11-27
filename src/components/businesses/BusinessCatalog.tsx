@@ -279,11 +279,8 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
   };
 
   const selectedInfo = selectedCategory ? CATEGORIES[selectedCategory] : null;
-  // Solo se muestran las categorías que ya tienen negocios; si ninguna tiene, se muestran todas.
-  const visibleCategories = useMemo(() => {
-    const withBusinesses = CATEGORY_ORDER.filter((c) => countByCategory[c] > 0);
-    return withBusinesses.length > 0 ? withBusinesses : CATEGORY_ORDER;
-  }, [countByCategory]);
+  // Se muestran las 9 categorías; las que aún no tienen negocios llevan la etiqueta «Pronto».
+  const visibleCategories = CATEGORY_ORDER;
 
   const selectedIsEmpty = selectedCategory ? countByCategory[selectedCategory] === 0 : false;
 
