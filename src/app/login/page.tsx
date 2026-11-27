@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { AuthPortal } from "@/components/auth/AuthPortal";
 import { LoginForm } from "@/components/auth/LoginForm";
 import {
   getAuthContext,
@@ -27,5 +28,12 @@ export default async function LoginPage({
     : resolvedSearchParams.next;
   const safeNext = sanitizeNextPath(rawNext);
 
-  return <LoginForm nextPath={safeNext} />;
+  return (
+    <>
+      <AuthPortal />
+      <div className="relative z-[1]">
+        <LoginForm nextPath={safeNext} />
+      </div>
+    </>
+  );
 }
