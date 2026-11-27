@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "glass";
 type ButtonSize = "sm" | "md" | "lg";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -18,6 +18,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     "border border-white/10 bg-[#1a1a1c] text-[#f5f5f7] hover:bg-[#222225] hover:border-white/18 active:scale-[0.97] disabled:opacity-40",
   ghost:
     "bg-transparent text-[#86868b] hover:bg-white/[0.06] hover:text-[#f5f5f7] active:scale-[0.97] disabled:opacity-40",
+  // Cristal líquido: pensado para ir encima de una foto o un fondo con color.
+  glass: "bk-liquid text-white hover:scale-[1.03] active:scale-[0.97] disabled:opacity-40",
   danger:
     "border border-[#ff6961]/25 bg-[rgba(255,69,58,0.14)] text-[#ff6961] hover:bg-[rgba(255,69,58,0.22)] active:scale-[0.97] disabled:opacity-40",
 };
