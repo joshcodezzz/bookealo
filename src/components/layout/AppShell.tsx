@@ -8,6 +8,7 @@ import { Artwork } from "@/components/ui/Artwork";
 import {
   BookingsIcon,
   CalendarIcon,
+  ChartIcon,
   ClockIcon,
   GridIcon,
   HomeIcon,
@@ -110,6 +111,12 @@ export function AppShell({
           label: "Horarios",
           shortLabel: "Horarios",
           icon: <ClockIcon className="h-[22px] w-[22px]" />,
+        },
+        {
+          href: "/panel/metricas",
+          label: "Métricas",
+          shortLabel: "Métricas",
+          icon: <ChartIcon className="h-[22px] w-[22px]" />,
         },
         {
           href: "/",
