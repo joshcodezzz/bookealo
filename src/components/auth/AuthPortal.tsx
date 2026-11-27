@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
-
-const RING_RADII = [300, 372, 452, 542, 644, 758, 884, 1000];
+import { useEffect, useRef, type ReactNode } from "react";
 
 /**
- * Fondo decorativo del inicio de sesión: anillos concéntricos con arcos que orbitan
- * y un leve desplazamiento que sigue al cursor. No recibe clics ni foco.
+ * Escenario del inicio de sesión: un haz de luz cae sobre el emblema de Bookealo
+ * y todo se inclina levemente siguiendo al cursor. El fondo es decorativo:
+ * no recibe clics ni foco. El formulario va como `children`.
  */
-export function AuthPortal() {
+export function AuthPortal({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,10 +28,10 @@ export function AuthPortal() {
       targetY = (event.clientY / window.innerHeight) * 2 - 1;
     };
     const tick = () => {
-      x += (targetX - x) * 0.05;
-      y += (targetY - y) * 0.05;
-      el.style.setProperty("--tx", `${(x * -14).toFixed(2)}px`);
-      el.style.setProperty("--ty", `${(y * -10).toFixed(2)}px`);
+      x += (targetX - x) * 0.06;
+      y += (targetY - y) * 0.06;
+      el.style.setProperty("--lx", x.toFixed(3));
+      el.style.setProperty("--ly", y.toFixed(3));
       frame = requestAnimationFrame(tick);
     };
 
@@ -45,41 +44,28 @@ export function AuthPortal() {
   }, []);
 
   return (
-    <div ref={ref} aria-hidden="true" className="bk-portal">
-      <div className="bk-portal-glow" />
-      <svg className="bk-portal-rings" viewBox="0 0 2000 2000" focusable="false">
-        <defs>
-          <linearGradient id="bk-portal-arc" gradientUnits="userSpaceOnUse" x1="300" y1="300" x2="1700" y2="1700">
-            <stop stopColor="#64d2ff" />
-            <stop offset=".55" stopColor="#2997ff" />
-            <stop offset="1" stopColor="#0071e3" />
-          </linearGradient>
-        </defs>
-        <circle className="bk-portal-wave" cx="1000" cy="1000" r="300" />
-        <circle className="bk-portal-wave bk-portal-wave-b" cx="1000" cy="1000" r="300" />
-        {RING_RADII.map((radius, index) => {
-          const length = 9 + (index % 3) * 5;
-          return (
-            <g key={radius}>
-              <circle className="bk-portal-base" cx="1000" cy="1000" r={radius} />
-              <circle
-                className={`bk-portal-arc ${index % 2 ? "bk-portal-arc-reverse" : ""}`}
-                cx="1000"
-                cy="1000"
-                r={radius}
-                pathLength={100}
-                strokeDasharray={`${length} ${100 - length}`}
-                style={
-                  {
-                    "--bk-orbit-duration": `${38 + index * 12}s`,
-                    animationDelay: `${-index * 7.3}s`,
-                  } as CSSProperties
-                }
-              />
-            </g>
-          );
-        })}
-      </svg>
+    <div ref={ref} className="bk-stage">
+      <div aria-hidden="true" className="bk-stage-bg">
+        <div className="bk-stage-floor" />
+        <div className="bk-stage-beam">
+          <i />
+        </div>
+        <div className="bk-stage-rings">
+          <i />
+          <i />
+          <i />
+        </div>
+        <div className="bk-stage-vignette" />
+      </div>
+
+      <div className="relative z-[1]">
+        <div aria-hidden="true" className="bk-key">
+          <span className="bk-key-letter">B</span>
+          <span className="bk-key-live" />
+          <span className="bk-key-sheen" />
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
