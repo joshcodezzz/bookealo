@@ -113,6 +113,18 @@ export function RegisterForm({ nextPath }: { nextPath: string | null }) {
         </div>
       </form>
 
+      <p className="mt-5 text-center text-[13px] leading-[1.45] text-[#86868b]">
+        Al crear tu cuenta aceptas los{" "}
+        <Link href="/terminos" className="bk-ul">
+          Términos de uso
+        </Link>{" "}
+        y la{" "}
+        <Link href="/privacidad" className="bk-ul">
+          Política de privacidad
+        </Link>
+        .
+      </p>
+
       <p className="mt-7 text-center text-[14px] text-[#86868b]">
         ¿Ya tienes cuenta?{" "}
         <Link href={loginHref} className="bk-ul font-medium">
