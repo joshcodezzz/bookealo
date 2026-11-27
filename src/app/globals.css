@@ -295,6 +295,159 @@ html {
   display: none;
 }
 
+/* Brillo que sigue al cursor en las tarjetas de categoría (azul de acción) */
+.bk-glow {
+  --gx: 50%;
+  --gy: 50%;
+}
+
+.bk-glow::before,
+.bk-glow::after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 350ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.bk-glow::before {
+  inset: -1px;
+  padding: 1.5px;
+  background: radial-gradient(190px circle at var(--gx) var(--gy), hsl(211 100% 62%), transparent 70%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box exclude, linear-gradient(#fff 0 0);
+}
+
+.bk-glow::after {
+  inset: 0;
+  background: radial-gradient(240px circle at var(--gx) var(--gy), hsl(211 100% 60% / 0.17), transparent 70%);
+}
+
+@media (hover: hover) {
+  .bk-glow:hover::before,
+  .bk-glow:hover::after {
+    opacity: 1;
+  }
+}
+
+.bk-glow:focus-visible::before,
+.bk-glow:focus-visible::after {
+  opacity: 1;
+}
+
+/* Métricas del dueño: material de cristal */
+.bk-mglass {
+  background: rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  backdrop-filter: blur(22px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    0 20px 52px -25px rgba(0, 0, 0, 0.7);
+}
+
+.bk-mpanel {
+  min-width: 0;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bk-mglass {
+    background: #161618;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Inicio de sesión: portal de anillos detrás del formulario */
+@keyframes bk-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bk-wave {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(3.3);
+    opacity: 0;
+  }
+}
+
+.bk-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  --tx: 0px;
+  --ty: 0px;
+}
+
+.bk-portal-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 720px;
+  height: 720px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.26), transparent 65%);
+}
+
+.bk-portal-rings {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(150vw, 1500px);
+  height: max(150vw, 1500px);
+  transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty)));
+}
+
+.bk-portal-rings circle {
+  fill: none;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.bk-portal-base {
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 1.5;
+}
+
+.bk-portal-arc {
+  stroke: url(#bk-portal-arc);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  opacity: 0.85;
+  animation: bk-orbit var(--bk-orbit-duration, 60s) linear infinite;
+}
+
+.bk-portal-arc-reverse {
+  animation-direction: reverse;
+}
+
+.bk-portal-wave {
+  stroke: #2997ff;
+  stroke-width: 1.5;
+  opacity: 0;
+  animation: bk-wave 9s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+}
+
+.bk-portal-wave-b {
+  animation-delay: -4.5s;
+}
+
 /* Preferencias de accesibilidad */
 @media (prefers-reduced-transparency: reduce) {
   .bk-glass,
