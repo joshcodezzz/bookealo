@@ -56,6 +56,59 @@ export type ScheduleRow = {
   is_closed: boolean;
 };
 
+export type MediaKind = "image" | "video" | "model3d";
+
+export type BusinessMediaRow = {
+  id: string;
+  business_id: string;
+  kind: MediaKind;
+  storage_path: string;
+  url: string;
+  title: string | null;
+  position: number;
+  created_at: string;
+};
+
+export type ReminderKind = "24h" | "2h" | "30m";
+export type ReminderStatus = "queued" | "sent" | "failed" | "skipped";
+
+export type BookingReminderRow = {
+  id: string;
+  booking_id: string;
+  kind: ReminderKind;
+  due_at: string;
+  to_name: string | null;
+  to_phone: string | null;
+  message: string;
+  params: Json;
+  status: ReminderStatus;
+  error: string | null;
+  attempts: number;
+  created_at: string;
+  sent_at: string | null;
+};
+
+export type ConversationRow = {
+  id: string;
+  business_id: string;
+  customer_id: string;
+  customer_name: string | null;
+  created_at: string;
+  last_message_at: string | null;
+  last_message_preview: string | null;
+  last_sender_id: string | null;
+  customer_read_at: string | null;
+  owner_read_at: string | null;
+};
+
+export type MessageRow = {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+};
+
 export type BookingRow = {
   id: string;
   service_id: string;
@@ -110,6 +163,7 @@ export type Database = {
           cover_image_url?: string | null;
           amenities?: Json;
           category?: string | null;
+          plan?: string;
           cancellation_policy?: string | null;
           is_active?: boolean;
           created_at?: string;
@@ -123,6 +177,7 @@ export type Database = {
           cover_image_url?: string | null;
           amenities?: Json;
           category?: string | null;
+          plan?: string;
           cancellation_policy?: string | null;
           is_active?: boolean;
           owner_id?: string | null;
@@ -162,6 +217,94 @@ export type Database = {
             columns: ["business_id"];
             isOneToOne: false;
             referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      business_media: {
+        Row: BusinessMediaRow;
+        Insert: {
+          id?: string;
+          business_id: string;
+          kind: MediaKind;
+          storage_path: string;
+          url: string;
+          title?: string | null;
+          position?: number;
+          created_at?: string;
+        };
+        Update: {
+          title?: string | null;
+          position?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "business_media_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      booking_reminders: {
+        Row: BookingReminderRow;
+        Insert: {
+          booking_id: string;
+          kind: ReminderKind;
+          due_at: string;
+          message: string;
+        };
+        Update: {
+          status?: ReminderStatus;
+          error?: string | null;
+          attempts?: number;
+          sent_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "booking_reminders_booking_id_fkey";
+            columns: ["booking_id"];
+            isOneToOne: false;
+            referencedRelation: "bookings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversations: {
+        Row: ConversationRow;
+        Insert: {
+          id?: string;
+          business_id: string;
+          customer_id: string;
+          customer_name?: string | null;
+        };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "conversations_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: false;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      messages: {
+        Row: MessageRow;
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          sender_id: string;
+          body: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
             referencedColumns: ["id"];
           },
         ];
@@ -248,6 +391,12 @@ export type Database = {
           p_since: string;
         };
         Returns: { business_id: string; booking_count: number }[];
+      };
+      mark_conversation_read: {
+        Args: {
+          p_conversation: string;
+        };
+        Returns: undefined;
       };
     };
     Enums: {
