@@ -102,7 +102,10 @@ async function loadShellExtras(
       .from("businesses")
       .select("id")
       .eq("owner_id", userId)
-      .maybeSingle();
+      // Si una cuenta tiene más de un negocio, el panel usa el más antiguo en vez de fallar.
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
 
     if (!business) return { navBadgeCount: 0, nextBooking: null };
 
@@ -127,12 +130,36 @@ async function loadShellExtras(
   return { navBadgeCount: 0, nextBooking: null };
 }
 
+/** Conversaciones con un mensaje del otro lado que el usuario todavía no abrió. */
+async function loadUnreadMessages(
+  userId: string | null,
+  profile: ProfileRow | null,
+): Promise<number> {
+  if (!userId || !profile || profile.role === "super_admin") return 0;
+
+  const supabase = await createClient();
+  // RLS ya limita el resultado a las conversaciones del usuario.
+  const { data, error } = await supabase
+    .from("conversations")
+    .select("customer_id, last_message_at, last_sender_id, customer_read_at, owner_read_at")
+    .not("last_message_at", "is", null)
+    .order("last_message_at", { ascending: false })
+    .limit(200);
+  if (error || !data) return 0;
+
+  return data.filter((c) => {
+    if (!c.last_message_at || c.last_sender_id === userId) return false;
+    const readAt = c.customer_id === userId ? c.customer_read_at : c.owner_read_at;
+    return !readAt || new Date(readAt).getTime() < new Date(c.last_message_at).getTime();
+  }).length;
+}
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const { user, profile } = await getAuthContext();
-  const { navBadgeCount, nextBooking } = await loadShellExtras(
-    user?.id ?? null,
-    profile,
-  );
+  const [{ navBadgeCount, nextBooking }, unreadMessages] = await Promise.all([
+    loadShellExtras(user?.id ?? null, profile),
+    loadUnreadMessages(user?.id ?? null, profile),
+  ]);
 
   return (
     <html lang="es" className={`${inter.variable} h-full antialiased`}>
@@ -141,6 +168,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           userEmail={user?.email ?? null}
           profile={profile}
           navBadgeCount={navBadgeCount}
+          unreadMessages={unreadMessages}
           nextBooking={nextBooking}
         >
           {children}
