@@ -214,7 +214,7 @@ export default async function BusinessDetailPage({
         {canChat && (
           <form
             action={startConversationAction.bind(null, business.id)}
-            className="absolute bottom-4 left-4 min-[900px]:bottom-6 min-[900px]:left-6"
+            className="absolute bottom-4 left-4 z-20 min-[900px]:bottom-6 min-[900px]:left-6"
           >
             <Button type="submit" variant="glass" size="lg">
               <ChatIcon className="h-[18px] w-[18px]" />
