@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Artwork } from "@/components/ui/Artwork";
 import { Button } from "@/components/ui/Button";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
@@ -15,6 +15,13 @@ import {
   type ArtKind,
   type BusinessCategory,
 } from "@/lib/categories";
+import {
+  hasAnyFilter,
+  interpretLocally,
+  normalizeText,
+  type SearchFilters,
+  type SearchInterpretation,
+} from "@/lib/smart-search";
 
 export type CatalogBusiness = {
   id: string;
@@ -130,23 +137,107 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
     return Array.from(unique).sort((a, b) => a.localeCompare(b, "es"));
   }, [businesses]);
 
-  const filteredBusinesses = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const list = businesses.filter((b) => {
-      if (selectedZone && (b.zone?.trim() ?? "") !== selectedZone) return false;
-      if (selectedCategory && b.category !== selectedCategory) return false;
-      if (onlyToday && !b.todayFirstSlot) return false;
-      if (!normalizedQuery) return true;
-      const haystack = [b.name, b.zone ?? "", CATEGORIES[b.category].label, ...b.amenities]
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(normalizedQuery);
+  // ── Búsqueda inteligente ────────────────────────────────────────────────
+  // Coincidencia literal primero (instantánea). Si la frase no coincide con nada o parece
+  // lenguaje natural, se interpreta: al momento con reglas locales y luego con IA en /api/ai-search.
+  const trimmedQuery = query.trim();
+  const [smart, setSmart] = useState<(SearchInterpretation & { forQuery: string }) | null>(null);
+  const [smartLoading, setSmartLoading] = useState(false);
+
+  const matchesBase = (b: CatalogBusiness) =>
+    (!selectedZone || (b.zone?.trim() ?? "") === selectedZone) &&
+    (!selectedCategory || b.category === selectedCategory) &&
+    (!onlyToday || Boolean(b.todayFirstSlot));
+
+  const literalMatches = useMemo(() => {
+    const q = normalizeText(trimmedQuery);
+    return businesses.filter((b) => {
+      if (!matchesBase(b)) return false;
+      if (!q) return true;
+      const haystack = normalizeText(
+        [b.name, b.zone ?? "", CATEGORIES[b.category].label, ...b.amenities].join(" "),
+      );
+      return haystack.includes(q);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businesses, trimmedQuery, selectedZone, selectedCategory, onlyToday]);
+
+  // Solo se interpreta cuando la frase no coincide literalmente con ningún negocio.
+  const needsInterpretation = trimmedQuery.length >= 3 && literalMatches.length === 0;
+
+  useEffect(() => {
+    if (!needsInterpretation) return;
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setSmartLoading(true);
+      try {
+        const response = await fetch("/api/ai-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: trimmedQuery, zones }),
+          signal: controller.signal,
+        });
+        if (!response.ok) return;
+        const data = (await response.json()) as SearchInterpretation;
+        if (data?.filters) setSmart({ ...data, forQuery: trimmedQuery });
+      } catch {
+        // Sin conexión o cancelado: se quedan las reglas locales.
+      } finally {
+        if (!controller.signal.aborted) setSmartLoading(false);
+      }
+    }, 450);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [needsInterpretation, trimmedQuery, zones]);
+
+  // Filtros entendidos para la frase actual: los de la IA si ya llegaron; si no, los locales.
+  const understood: (SearchFilters & { source: "ai" | "local" }) | null = useMemo(() => {
+    if (!needsInterpretation) return null;
+    if (smart && smart.forQuery === trimmedQuery && hasAnyFilter(smart.filters)) {
+      return { ...smart.filters, source: smart.source };
+    }
+    const local = interpretLocally(trimmedQuery, zones);
+    return local ? { ...local, source: "local" } : null;
+  }, [needsInterpretation, smart, trimmedQuery, zones]);
+
+  const smartMatches = useMemo(() => {
+    if (!understood) return null;
+    return businesses.filter((b) => {
+      if (!matchesBase(b)) return false;
+      if (understood.category && b.category !== understood.category) return false;
+      if (understood.zone && (b.zone?.trim() ?? "") !== understood.zone) return false;
+      if (understood.today && !b.todayFirstSlot) return false;
+      if (understood.maxPrice !== null && (b.minPrice === null || b.minPrice > understood.maxPrice)) {
+        return false;
+      }
+      const name = normalizeText(b.name);
+      return understood.terms.every((t) => name.includes(t));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businesses, understood, selectedZone, selectedCategory, onlyToday]);
+
+  const usingSmart = Boolean(smartMatches && understood);
+
+  const filteredBusinesses = useMemo(() => {
+    const list = usingSmart && smartMatches ? smartMatches : literalMatches;
     // Lo que se puede reservar hoy va primero; el resto conserva su orden.
     return [...list].sort(
       (a, b) => Number(Boolean(b.todayFirstSlot)) - Number(Boolean(a.todayFirstSlot)),
     );
-  }, [businesses, query, selectedZone, selectedCategory, onlyToday]);
+  }, [usingSmart, smartMatches, literalMatches]);
+
+  const understoodChips = useMemo(() => {
+    if (!usingSmart || !understood) return [];
+    const chips: string[] = [];
+    if (understood.category) chips.push(CATEGORIES[understood.category].label);
+    if (understood.zone) chips.push(understood.zone);
+    if (understood.today) chips.push("Disponible hoy");
+    if (understood.maxPrice !== null) chips.push(`Hasta ${formatUSD(understood.maxPrice)}`);
+    understood.terms.forEach((t) => chips.push(`«${t}»`));
+    return chips;
+  }, [usingSmart, understood]);
 
   const hasActiveFilter = Boolean(
     query.trim() || selectedZone || selectedCategory || onlyToday,
@@ -201,7 +292,7 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
                   type="search"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="¿Qué quieres reservar?"
+                  placeholder="Prueba: barbería hoy en Costa del Este"
                   aria-label="Buscar negocios"
                   autoComplete="off"
                   enterKeyHint="search"
@@ -242,6 +333,37 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
                 </div>
               )}
             </div>
+
+            {(understoodChips.length > 0 || (smartLoading && needsInterpretation)) && (
+              <div
+                aria-live="polite"
+                className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[13px] text-[#86868b]"
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 16 16"
+                    className={`h-3.5 w-3.5 text-[#2997ff] ${smartLoading ? "animate-pulse" : ""}`}
+                    fill="currentColor"
+                  >
+                    <path d="M8 1l1.6 4.4L14 7l-4.4 1.6L8 13l-1.6-4.4L2 7l4.4-1.6z" />
+                  </svg>
+                  {understoodChips.length > 0
+                    ? understood?.source === "ai"
+                      ? "Búsqueda con IA:"
+                      : "Entendí:"
+                    : "Interpretando…"}
+                </span>
+                {understoodChips.map((chip) => (
+                  <span
+                    key={chip}
+                    className="rounded-full border border-[#2997ff]/40 px-2.5 py-0.5 text-[12px] font-medium text-[#2997ff]"
+                  >
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {anyAvailableToday && (
               <div className="flex justify-center pt-1">
