@@ -124,3 +124,13 @@ export function resolveArtKind(category: BusinessCategory, ...texts: (string | n
   if (category === "belleza" && /\b(barber)/i.test(t)) return "barberia";
   return category;
 }
+
+/** Grupos para mostrar las 9 categorías en bloques de tres, que se leen más rápido que nueve iguales. */
+export const CATEGORY_GROUPS: { title: string; categories: BusinessCategory[] }[] = [
+  { title: "Para ti", categories: ["belleza", "bienestar", "deportes"] },
+  { title: "Para tu casa", categories: ["hogar", "limpieza", "mascotas"] },
+  { title: "A tu medida", categories: ["clases", "talents", "mandaos"] },
+];
+
+/** Cuántas categorías se muestran en la portada antes de «Ver todas». */
+export const FEATURED_CATEGORY_COUNT = 4;
