@@ -11,7 +11,8 @@ import { Artwork } from "@/components/ui/Artwork";
 import { Button } from "@/components/ui/Button";
 import { ChatIcon, ChevronLeftIcon, ExternalLinkIcon } from "@/components/ui/Icons";
 import { getAuthContext } from "@/lib/auth";
-import { getNextPanamaDays } from "@/lib/dates";
+import { formatPanamaTime, getNextPanamaDays } from "@/lib/dates";
+import { findNextAvailableSlot } from "@/lib/next-slot";
 import { createClient } from "@/lib/supabase/server";
 import { resolveCategory } from "@/lib/categories";
 import { parseAmenities, type ScheduleRow } from "@/types/database";
@@ -125,6 +126,32 @@ export default async function BusinessDetailPage({
     ? business.maps_url
     : null;
   const next14Days = getNextPanamaDays(14);
+
+  // Próximo turno libre de cualquier servicio, buscando hasta una semana adelante.
+  // Si la búsqueda falla, la página se muestra sin la sugerencia.
+  const nextSlotRaw = await findNextAvailableSlot(
+    supabase,
+    servicesWithSchedules,
+    next14Days.slice(0, 7).map((d) => d.dateStr),
+  ).catch(() => null);
+  const nextSlotDay = nextSlotRaw ? next14Days.find((d) => d.dateStr === nextSlotRaw.dateStr) : undefined;
+  const nextSlotDayIndex = nextSlotRaw ? next14Days.findIndex((d) => d.dateStr === nextSlotRaw.dateStr) : -1;
+  const nextSlot =
+    nextSlotRaw && nextSlotDay
+      ? {
+          serviceId: nextSlotRaw.serviceId,
+          dateStr: nextSlotRaw.dateStr,
+          startTime: nextSlotRaw.startTime,
+          // Se formatea en el servidor para evitar diferencias al hidratar.
+          dayLabel:
+            nextSlotDayIndex === 0
+              ? "Hoy"
+              : nextSlotDayIndex === 1
+                ? "Mañana"
+                : `${nextSlotDay.weekdayFull.charAt(0).toUpperCase()}${nextSlotDay.weekdayFull.slice(1)} ${nextSlotDay.dayNumber}`,
+          timeLabel: formatPanamaTime(nextSlotRaw.startIso),
+        }
+      : null;
 
   const firstParam = (val: string | string[] | undefined) =>
     Array.isArray(val) ? (val[0] ?? null) : (val ?? null);
@@ -254,6 +281,7 @@ export default async function BusinessDetailPage({
           initialServiceId={firstParam(resolvedSearchParams.reservar)}
           initialDateStr={firstParam(resolvedSearchParams.fecha)}
           initialSlotTime={firstParam(resolvedSearchParams.hora)}
+          nextSlot={nextSlot}
           showRoof={
             resolveCategory(business.category, business.name, ...amenities) === "deportes"
           }
