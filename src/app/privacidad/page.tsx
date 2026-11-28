@@ -25,6 +25,7 @@ const sections: LegalSection[] = [
         <li>Para crear y mostrar tus reservas, y para que el negocio pueda atenderte.</li>
         <li>Para enviarte avisos relacionados con tus reservas.</li>
         <li>Para mostrar a cada negocio estadísticas sobre sus propias reservas.</li>
+        <li>Para sugerirte negocios según lo que has reservado antes.</li>
       </ul>
     ),
   },
@@ -47,6 +48,11 @@ const sections: LegalSection[] = [
         <li>
           Cuando una búsqueda no encuentra coincidencias exactas, el texto que escribiste puede enviarse a un
           proveedor de inteligencia artificial para interpretarlo. No se envía tu nombre, tu correo ni tu teléfono.
+        </li>
+        <li>
+          Para sugerirte negocios en la portada usamos tus reservas anteriores. A ese mismo proveedor puede enviarse
+          un resumen sin identificarte: en qué categorías y zonas has reservado y cuántas veces. No se envía tu
+          nombre, tu correo, tu teléfono ni el detalle de cada reserva.
         </li>
       </ul>
     ),
