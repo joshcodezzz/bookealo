@@ -298,8 +298,10 @@ export function AppShell({
       {/* Barra superior glass sticky (escritorio y móvil) */}
       <header className="bk-glass-nav sticky top-0 z-30 border-b border-white/10 pt-[var(--sat)]">
         <div className="mx-auto flex h-[48px] max-w-[1024px] items-center justify-between gap-6 px-6 min-[900px]:h-[44px] min-[900px]:px-[22px]">
+          {/* El logo lleva siempre a la portada, sea cual sea el rol. */}
           <Link
-            href={brandHref}
+            href="/"
+            aria-label="Bookealo, ir al inicio"
             className="text-[19px] font-semibold tracking-[-0.03em] text-[#f5f5f7] opacity-90 transition-opacity hover:opacity-100 min-[900px]:text-[17px]"
           >
             Bookealo
