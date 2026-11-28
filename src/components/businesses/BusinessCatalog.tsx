@@ -11,7 +11,9 @@ import { EmptyState } from "@/components/ui/States";
 import { formatUSD } from "@/lib/currency";
 import {
   CATEGORIES,
+  CATEGORY_GROUPS,
   CATEGORY_ORDER,
+  FEATURED_CATEGORY_COUNT,
   categoryCountLabel,
   type ArtKind,
   type BusinessCategory,
@@ -282,8 +284,66 @@ export function BusinessCatalog({ businesses, showSuggestions = false }: Busines
   };
 
   const selectedInfo = selectedCategory ? CATEGORIES[selectedCategory] : null;
-  // Se muestran las 9 categorías; las que aún no tienen negocios llevan la etiqueta «Pronto».
-  const visibleCategories = CATEGORY_ORDER;
+  // Portada con menos decisiones: se destacan las 4 categorías con más negocios y el resto
+  // queda a un toque, agrupado. Las que aún no tienen negocios llevan la etiqueta «Pronto».
+  const featuredCategories = useMemo(
+    () =>
+      [...CATEGORY_ORDER]
+        .sort((a, b) => countByCategory[b] - countByCategory[a])
+        .slice(0, FEATURED_CATEGORY_COUNT),
+    [countByCategory],
+  );
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  // Si el filtro activo es de una categoría no destacada, se muestran todas para que se vea marcada.
+  const allCategoriesOpen =
+    showAllCategories || (selectedCategory !== null && !featuredCategories.includes(selectedCategory));
+
+  const renderCategory = (category: BusinessCategory) => {
+    const info = CATEGORIES[category];
+    const count = countByCategory[category];
+    const active = selectedCategory === category;
+    const badge = count === 0 ? "Pronto" : info.isNew ? "Nuevo" : null;
+    return (
+      <button
+        key={category}
+        type="button"
+        aria-pressed={active}
+        onClick={() => pickCategory(category)}
+        onPointerMove={trackGlow}
+        className={`bk-glow group relative flex min-h-[116px] cursor-pointer flex-col justify-between rounded-[18px] border p-4 text-left transition-[transform,border-color,background-color] duration-300 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98] min-[900px]:min-h-[150px] min-[900px]:p-6 ${
+          active
+            ? "border-[#0071e3] bg-[#16263d]"
+            : "border-white/[0.08] bg-[#111113] hover:border-white/20 hover:bg-[#161618]"
+        }`}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <CategoryIcon
+            category={category}
+            className={`h-7 w-7 ${active ? "text-[#2997ff]" : "text-[#f5f5f7]/85"}`}
+          />
+          {badge && (
+            <span
+              className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
+                badge === "Nuevo"
+                  ? "border-[#2997ff]/40 text-[#2997ff]"
+                  : "border-white/15 text-[#86868b]"
+              }`}
+            >
+              {badge}
+            </span>
+          )}
+        </div>
+        <div className="mt-4 min-[900px]:mt-6">
+          <p className="text-[15px] font-semibold leading-[1.25] tracking-[-0.016em] text-[#f5f5f7] min-[900px]:text-[17px]">
+            {info.label}
+          </p>
+          <p className="mt-1 line-clamp-2 text-[13px] leading-[1.35] text-[#86868b] tabular-nums min-[900px]:line-clamp-none min-[900px]:text-[14px]">
+            {count > 0 ? categoryCountLabel(category, count) : info.blurb}
+          </p>
+        </div>
+      </button>
+    );
+  };
 
   const selectedIsEmpty = selectedCategory ? countByCategory[selectedCategory] === 0 : false;
 
@@ -409,60 +469,46 @@ export function BusinessCatalog({ businesses, showSuggestions = false }: Busines
       {/* Cuadrícula de categorías */}
       <section aria-labelledby="bk-categorias" className="pb-14 min-[900px]:pb-20">
         <Container>
-          <h2
-            id="bk-categorias"
-            className="mb-5 text-[28px] font-semibold leading-[1.14] tracking-[-0.01em] text-[#f5f5f7] min-[900px]:mb-6 min-[900px]:text-[40px] min-[900px]:leading-[1.1]"
-          >
-            Categorías
-          </h2>
-          <div className="grid grid-cols-2 gap-3 min-[900px]:grid-cols-3 min-[900px]:gap-4">
-            {visibleCategories.map((category) => {
-              const info = CATEGORIES[category];
-              const count = countByCategory[category];
-              const active = selectedCategory === category;
-              const badge = count === 0 ? "Pronto" : info.isNew ? "Nuevo" : null;
-              return (
-                <button
-                  key={category}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => pickCategory(category)}
-                  onPointerMove={trackGlow}
-                  className={`bk-glow group relative flex min-h-[116px] cursor-pointer flex-col justify-between rounded-[18px] border p-4 text-left transition-[transform,border-color,background-color] duration-300 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98] min-[900px]:min-h-[150px] min-[900px]:p-6 ${
-                    active
-                      ? "border-[#0071e3] bg-[#16263d]"
-                      : "border-white/[0.08] bg-[#111113] hover:border-white/20 hover:bg-[#161618]"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <CategoryIcon
-                      category={category}
-                      className={`h-7 w-7 ${active ? "text-[#2997ff]" : "text-[#f5f5f7]/85"}`}
-                    />
-                    {badge && (
-                      <span
-                        className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
-                          badge === "Nuevo"
-                            ? "border-[#2997ff]/40 text-[#2997ff]"
-                            : "border-white/15 text-[#86868b]"
-                        }`}
-                      >
-                        {badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-4 min-[900px]:mt-6">
-                    <p className="text-[15px] font-semibold leading-[1.25] tracking-[-0.016em] text-[#f5f5f7] min-[900px]:text-[17px]">
-                      {info.label}
-                    </p>
-                    <p className="mt-1 line-clamp-2 text-[13px] leading-[1.35] text-[#86868b] tabular-nums min-[900px]:line-clamp-none min-[900px]:text-[14px]">
-                      {count > 0 ? categoryCountLabel(category, count) : info.blurb}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 min-[900px]:mb-6">
+            <h2
+              id="bk-categorias"
+              className="text-[28px] font-semibold leading-[1.14] tracking-[-0.01em] text-[#f5f5f7] min-[900px]:text-[40px] min-[900px]:leading-[1.1]"
+            >
+              {allCategoriesOpen ? "Todas las categorías" : "Categorías"}
+            </h2>
+            <button
+              type="button"
+              aria-expanded={allCategoriesOpen}
+              onClick={() => {
+                // Al cerrar se quita el filtro de una categoría que quedaría oculta.
+                if (allCategoriesOpen && selectedCategory && !featuredCategories.includes(selectedCategory)) {
+                  setSelectedCategory(null);
+                }
+                setShowAllCategories(!allCategoriesOpen);
+              }}
+              className="bk-link inline-flex min-h-11 cursor-pointer items-center text-[15px] min-[900px]:text-[17px]"
+            >
+              {allCategoriesOpen ? "Ver menos" : `Ver las ${CATEGORY_ORDER.length} categorías`}
+            </button>
           </div>
+          {allCategoriesOpen ? (
+            <div className="space-y-8">
+              {CATEGORY_GROUPS.map((group) => (
+                <div key={group.title}>
+                  <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-[#86868b]">
+                    {group.title}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 min-[900px]:grid-cols-3 min-[900px]:gap-4">
+                    {group.categories.map(renderCategory)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 min-[900px]:grid-cols-4 min-[900px]:gap-4">
+              {featuredCategories.map(renderCategory)}
+            </div>
+          )}
         </Container>
       </section>
 

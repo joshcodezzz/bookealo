@@ -28,6 +28,18 @@ type BusinessServicesSectionProps = {
   initialSlotTime?: string | null;
   /** Solo en canchas y espacios tiene sentido decir si es techado o al aire libre. */
   showRoof?: boolean;
+  /** Turno libre más cercano, ya verificado en el servidor. */
+  nextSlot?: NextSlotSuggestion | null;
+};
+
+export type NextSlotSuggestion = {
+  serviceId: string;
+  dateStr: string;
+  /** HH:MM, como lo espera la hoja de reserva */
+  startTime: string;
+  /** «Hoy», «Mañana» o el día de la semana con su número */
+  dayLabel: string;
+  timeLabel: string;
 };
 
 export function BusinessServicesSection({
@@ -39,6 +51,7 @@ export function BusinessServicesSection({
   initialDateStr,
   initialSlotTime,
   showRoof = true,
+  nextSlot = null,
 }: BusinessServicesSectionProps) {
   const canReserve = userRole === null || userRole === "customer";
   const isNonCustomerRole =
@@ -74,11 +87,49 @@ export function BusinessServicesSection({
     setActiveService(service);
   };
 
+  // La sugerencia solo se muestra a quien puede reservar y si el servicio sigue en la lista.
+  const nextSlotService = canReserve && nextSlot ? (services.find((s) => s.id === nextSlot.serviceId) ?? null) : null;
+  const handleReserveNextSlot = () => {
+    if (!nextSlot || !nextSlotService) return;
+    setSheetInitialDate(nextSlot.dateStr);
+    setSheetInitialTime(nextSlot.startTime);
+    setActiveService(nextSlotService);
+  };
+
   return (
     <section aria-label="Servicios disponibles">
       {isNonCustomerRole && (
         <div className="mb-8 rounded-[16px] border border-[#ffa530]/25 bg-[rgba(255,159,10,0.1)] px-5 py-3.5 text-[14px] text-[#ffa530]">
           Necesitas una cuenta de cliente para reservar.
+        </div>
+      )}
+
+      {nextSlot && nextSlotService && (
+        <div
+          aria-labelledby="bk-proximo-turno"
+          role="group"
+          className="mb-12 flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-[24px] border border-[#2997ff]/45 bg-[#111113] p-6 min-[900px]:mb-16 min-[900px]:p-8"
+        >
+          <div className="min-w-0">
+            <p id="bk-proximo-turno" className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#5be08f]">
+              Próximo turno disponible
+            </p>
+            <p className="mt-2.5 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#f5f5f7] tabular-nums min-[900px]:text-[40px]">
+              {nextSlot.dayLabel}, {nextSlot.timeLabel}
+            </p>
+            <p className="mt-2 text-[16px] text-[#f5f5f7]/80 min-[900px]:text-[17px]">
+              {nextSlotService.name} · {nextSlotService.slot_duration_minutes} min ·{" "}
+              <span className="font-semibold text-[#f5f5f7] tabular-nums">{formatUSD(nextSlotService.price)}</span>
+            </p>
+          </div>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
+            <Button size="lg" onClick={handleReserveNextSlot} className="w-full sm:w-auto">
+              Reservar este turno
+            </Button>
+            <p className="text-center text-[13px] text-[#86868b] sm:text-right">
+              O elige otro día u hora en los servicios de abajo.
+            </p>
+          </div>
         </div>
       )}
 
