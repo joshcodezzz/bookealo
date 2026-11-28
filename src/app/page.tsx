@@ -9,6 +9,7 @@ import {
   recentWindowStartIso,
 } from "@/lib/availability-today";
 import { formatPanamaTime } from "@/lib/dates";
+import { getAuthContext } from "@/lib/auth";
 import { translateError } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import { parseAmenities } from "@/types/database";
@@ -115,5 +116,8 @@ export default async function HomePage() {
     },
   );
 
-  return <BusinessCatalog businesses={catalogBusinesses} />;
+  // «Para ti» solo se ofrece a clientes con sesión iniciada.
+  const { profile } = await getAuthContext();
+
+  return <BusinessCatalog businesses={catalogBusinesses} showSuggestions={profile?.role === "customer"} />;
 }
