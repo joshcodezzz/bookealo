@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Artwork } from "@/components/ui/Artwork";
+import { SuggestedForYou } from "@/components/businesses/SuggestedForYou";
 import { Button } from "@/components/ui/Button";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { SearchIcon } from "@/components/ui/Icons";
@@ -41,6 +42,8 @@ export type CatalogBusiness = {
 
 type BusinessCatalogProps = {
   businesses: CatalogBusiness[];
+  /** Solo para clientes con sesión: muestra «Para ti» con sugerencias según sus reservas. */
+  showSuggestions?: boolean;
 };
 
 /** La prueba social solo aparece cuando el número es real y significativo */
@@ -107,7 +110,7 @@ function BusinessCard({ business }: { business: CatalogBusiness }) {
   );
 }
 
-export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
+export function BusinessCatalog({ businesses, showSuggestions = false }: BusinessCatalogProps) {
   const [query, setQuery] = useState("");
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] =
@@ -400,6 +403,8 @@ export function BusinessCatalog({ businesses }: BusinessCatalogProps) {
           </div>
         </Container>
       </section>
+
+      {showSuggestions && <SuggestedForYou businesses={businesses} />}
 
       {/* Cuadrícula de categorías */}
       <section aria-labelledby="bk-categorias" className="pb-14 min-[900px]:pb-20">
